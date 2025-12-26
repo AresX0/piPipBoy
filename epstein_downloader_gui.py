@@ -1400,23 +1400,55 @@ class DownloaderGUI:
         # --- Main Downloader UI ---
 
         # Title
-        title = ttk.Label(self.frame, text="Epstein Court Records Downloader", font=("Segoe UI", 26, "bold"))
-        title.grid(row=0, column=0, columnspan=4, pady=(10, 20), sticky="nsew")
+        title = ttk.Label(self.frame, text="Epstein Court Records Downloader", font=("Segoe UI", 32, "bold"))
+        title.grid(row=0, column=0, columnspan=4, pady=(18, 28), sticky="nsew")
 
         # --- Download Controls Group ---
-        download_controls = ttk.LabelFrame(self.frame, text="Download Controls", padding=(15, 10))
-        download_controls.grid(row=1, column=0, columnspan=4, sticky="ew", padx=10, pady=(0, 15))
+        download_controls = ttk.LabelFrame(self.frame, text="Download Controls", padding=(20, 15))
+        try:
+            download_controls.configure(font=("Segoe UI", 15, "bold"))
+        except Exception:
+            pass
+        download_controls.grid(row=1, column=0, columnspan=4, sticky="ew", padx=20, pady=(0, 20))
         download_controls.columnconfigure(1, weight=1)
         download_controls.configure(labelanchor='n')
-        concurrent_label = ttk.Label(download_controls, text="Concurrent Downloads:", font=("Segoe UI", 12))
-        concurrent_label.grid(row=0, column=0, sticky="e", padx=(0, 8), pady=5)
-        concurrent_spin = ttk.Spinbox(download_controls, from_=1, to=32, textvariable=self.concurrent_downloads, width=5, increment=1, font=("Segoe UI", 12))
-        concurrent_spin.grid(row=0, column=1, sticky="w", pady=5)
+        concurrent_label = ttk.Label(download_controls, text="Concurrent Downloads:", font=("Segoe UI", 13, "bold"))
+        concurrent_label.grid(row=0, column=0, sticky="e", padx=(0, 12), pady=8)
+        concurrent_spin = ttk.Spinbox(download_controls, from_=1, to=32, textvariable=self.concurrent_downloads, width=5, increment=1, font=("Segoe UI", 13))
+        concurrent_spin.grid(row=0, column=1, sticky="w", pady=8)
         self.add_tooltip(concurrent_spin, "Set the number of concurrent downloads (threads)")
         self.add_tooltip(concurrent_label, "Set the number of concurrent downloads (threads)")
 
+        # --- Action Buttons Group ---
+        action_section = ttk.LabelFrame(self.frame, text="Actions", padding=(20, 15))
+        try:
+            action_section.configure(font=("Segoe UI", 15, "bold"))
+        except Exception:
+            pass
+        action_section.grid(row=4, column=0, columnspan=4, sticky="ew", padx=20, pady=(0, 20))
+        action_section.configure(labelanchor='n')
+        self.download_btn = ttk.Button(action_section, text="▶ Start Download", command=self.start_download_all_thread)
+        self.download_btn.grid(row=0, column=0, pady=8, padx=(0, 12), sticky="ew")
+        self.add_tooltip(self.download_btn, "Start downloading all files from the URLs above (runs in background, UI stays responsive)")
+        self.pause_btn = ttk.Button(action_section, text="⏸ Pause", command=self.pause_downloads)
+        self.pause_btn.grid(row=0, column=1, pady=8, padx=(0, 12), sticky="ew")
+        self.add_tooltip(self.pause_btn, "Pause all downloads in progress.")
+        self.resume_btn = ttk.Button(action_section, text="▶ Resume", command=self.resume_downloads, state='disabled')
+        self.resume_btn.grid(row=0, column=2, pady=8, padx=(0, 12), sticky="ew")
+        self.add_tooltip(self.resume_btn, "Resume paused downloads.")
+        self.stop_btn = ttk.Button(action_section, text="■ Stop", command=self.force_quit)
+        self.stop_btn.grid(row=0, column=3, pady=8, padx=(0, 12), sticky="ew")
+        self.add_tooltip(self.stop_btn, "Stop all downloads and terminate current operations.")
+        self.reset_btn = ttk.Button(action_section, text="⟲ Reset", command=self.clear_completed_urls)
+        self.reset_btn.grid(row=0, column=4, pady=8, padx=(0, 0), sticky="ew")
+        self.add_tooltip(self.reset_btn, "Reset the download queue and clear completed/failed URLs.")
+
         # --- URL Management Group ---
         url_section = ttk.LabelFrame(self.frame, text="Download URLs", padding=(15, 10))
+        try:
+            url_section.configure(font=("Segoe UI", 15, "bold"))
+        except Exception:
+            pass
         url_section.grid(row=2, column=0, columnspan=4, sticky="ew", padx=10, pady=(0, 15))
         url_section.columnconfigure(1, weight=1)
         url_section.configure(labelanchor='n')
@@ -1449,6 +1481,10 @@ class DownloaderGUI:
 
         # --- Download Folder Group ---
         dir_section = ttk.LabelFrame(self.frame, text="Download Folder", padding=(15, 10))
+        try:
+            dir_section.configure(font=("Segoe UI", 15, "bold"))
+        except Exception:
+            pass
         dir_section.grid(row=3, column=0, columnspan=4, sticky="ew", padx=10, pady=(0, 15))
         dir_section.columnconfigure(1, weight=1)
         dir_section.configure(labelanchor='n')
@@ -1484,6 +1520,10 @@ class DownloaderGUI:
 
         # --- Progress Section ---
         progress_section = ttk.LabelFrame(self.frame, text="Progress", padding=(15, 10))
+        try:
+            progress_section.configure(font=("Segoe UI", 15, "bold"))
+        except Exception:
+            pass
         progress_section.grid(row=5, column=0, columnspan=4, sticky="ew", padx=10, pady=(0, 15))
         progress_section.configure(labelanchor='n')
         progress_label = ttk.Label(progress_section, text="Overall Progress:", font=("Segoe UI", 12))
@@ -1505,6 +1545,10 @@ class DownloaderGUI:
         # --- Status Pane Group ---
         import tkinter.scrolledtext as st
         status_section = ttk.LabelFrame(self.frame, text="Status Log", padding=(15, 10))
+        try:
+            status_section.configure(font=("Segoe UI", 15, "bold"))
+        except Exception:
+            pass
         status_section.grid(row=6, column=0, columnspan=4, sticky="nsew", padx=10, pady=(0, 15))
         status_section.configure(labelanchor='n')
         status_pane_label = ttk.Label(status_section, text="Status Pane:", font=("Segoe UI", 12))
