@@ -1427,19 +1427,33 @@ class DownloaderGUI:
             pass
         action_section.grid(row=4, column=0, columnspan=4, sticky="ew", padx=20, pady=(0, 20))
         action_section.configure(labelanchor='n')
-        self.download_btn = ttk.Button(action_section, text="▶ Start Download", command=self.start_download_all_thread)
+        # Load icons for action buttons
+        from PIL import Image, ImageTk
+        def load_icon(path, size=(20, 20)):
+            try:
+                img = Image.open(path).resize(size, Image.ANTIALIAS)
+                return ImageTk.PhotoImage(img)
+            except Exception:
+                return None
+        self.icon_download = load_icon(os.path.join('assets', 'download.png'))
+        self.icon_pause = load_icon(os.path.join('assets', 'pause.png'))
+        self.icon_resume = load_icon(os.path.join('assets', 'resume.png'))
+        self.icon_stop = load_icon(os.path.join('assets', 'stop.png'))
+        self.icon_reset = load_icon(os.path.join('assets', 'reset.png'))
+
+        self.download_btn = ttk.Button(action_section, text=" Start Download", image=self.icon_download, compound='left', command=self.start_download_all_thread)
         self.download_btn.grid(row=0, column=0, pady=8, padx=(0, 12), sticky="ew")
         self.add_tooltip(self.download_btn, "Start downloading all files from the URLs above (runs in background, UI stays responsive)")
-        self.pause_btn = ttk.Button(action_section, text="⏸ Pause", command=self.pause_downloads)
+        self.pause_btn = ttk.Button(action_section, text=" Pause", image=self.icon_pause, compound='left', command=self.pause_downloads)
         self.pause_btn.grid(row=0, column=1, pady=8, padx=(0, 12), sticky="ew")
         self.add_tooltip(self.pause_btn, "Pause all downloads in progress.")
-        self.resume_btn = ttk.Button(action_section, text="▶ Resume", command=self.resume_downloads, state='disabled')
+        self.resume_btn = ttk.Button(action_section, text=" Resume", image=self.icon_resume, compound='left', command=self.resume_downloads, state='disabled')
         self.resume_btn.grid(row=0, column=2, pady=8, padx=(0, 12), sticky="ew")
         self.add_tooltip(self.resume_btn, "Resume paused downloads.")
-        self.stop_btn = ttk.Button(action_section, text="■ Stop", command=self.force_quit)
+        self.stop_btn = ttk.Button(action_section, text=" Stop", image=self.icon_stop, compound='left', command=self.force_quit)
         self.stop_btn.grid(row=0, column=3, pady=8, padx=(0, 12), sticky="ew")
         self.add_tooltip(self.stop_btn, "Stop all downloads and terminate current operations.")
-        self.reset_btn = ttk.Button(action_section, text="⟲ Reset", command=self.clear_completed_urls)
+        self.reset_btn = ttk.Button(action_section, text=" Reset", image=self.icon_reset, compound='left', command=self.clear_completed_urls)
         self.reset_btn.grid(row=0, column=4, pady=8, padx=(0, 0), sticky="ew")
         self.add_tooltip(self.reset_btn, "Reset the download queue and clear completed/failed URLs.")
 
