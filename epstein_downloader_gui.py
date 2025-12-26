@@ -1275,23 +1275,45 @@ class DownloaderGUI:
         style = ttk.Style()
         # Use a unique style name to avoid global side effects
         style.theme_use('clam')  # 'clam' is modern and cross-platform
-        style.configure('Modern.Horizontal.TProgressbar',
-                        troughcolor='#e0e0e0' if not self.dark_mode else '#222',
-                        bordercolor='#b0b0b0' if not self.dark_mode else '#444',
-                        background='#4a90e2' if not self.dark_mode else '#6fa8dc',
-                        lightcolor='#4a90e2' if not self.dark_mode else '#6fa8dc',
-                        darkcolor='#357ab7' if not self.dark_mode else '#27496d',
-                        thickness=18,
-                        relief='flat')
-        # For file progress, use a different color
-        style.configure('ModernFile.Horizontal.TProgressbar',
-                        troughcolor='#e0e0e0' if not self.dark_mode else '#222',
-                        bordercolor='#b0b0b0' if not self.dark_mode else '#444',
-                        background='#7ed957' if not self.dark_mode else '#8fd694',
-                        lightcolor='#7ed957' if not self.dark_mode else '#8fd694',
-                        darkcolor='#4e944f' if not self.dark_mode else '#386641',
-                        thickness=14,
-                        relief='flat')
+        # Modern overall progress bar style
+        style.configure(
+            'Modern.Horizontal.TProgressbar',
+            troughcolor='#f4f6fa' if not self.dark_mode else '#222',
+            bordercolor='#d1d5db' if not self.dark_mode else '#444',
+            background='#4a90e2' if not self.dark_mode else '#6fa8dc',
+            lightcolor='#6fa8dc' if not self.dark_mode else '#4a90e2',
+            darkcolor='#357ab7' if not self.dark_mode else '#27496d',
+            thickness=20,
+            relief='flat',
+            borderwidth=0,
+            padding=2
+        )
+        # Add rounded corners and shadow effect (where supported)
+        style.layout('Modern.Horizontal.TProgressbar', [
+            ('Horizontal.Progressbar.trough', {'children': [
+                ('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'}),
+                ('Horizontal.Progressbar.label', {'sticky': ''})
+            ], 'sticky': 'nswe'})
+        ])
+        # Modern file progress bar style (green)
+        style.configure(
+            'ModernFile.Horizontal.TProgressbar',
+            troughcolor='#f4f6fa' if not self.dark_mode else '#222',
+            bordercolor='#d1d5db' if not self.dark_mode else '#444',
+            background='#7ed957' if not self.dark_mode else '#8fd694',
+            lightcolor='#a8e063' if not self.dark_mode else '#8fd694',
+            darkcolor='#4e944f' if not self.dark_mode else '#386641',
+            thickness=16,
+            relief='flat',
+            borderwidth=0,
+            padding=2
+        )
+        style.layout('ModernFile.Horizontal.TProgressbar', [
+            ('Horizontal.Progressbar.trough', {'children': [
+                ('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'}),
+                ('Horizontal.Progressbar.label', {'sticky': ''})
+            ], 'sticky': 'nswe'})
+        ])
         # Make window scalable
         self.root.geometry('1100x800')
         self.root.minsize(800, 600)
