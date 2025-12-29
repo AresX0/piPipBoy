@@ -111,6 +111,7 @@ parser.add_argument("--dev", action="store_true", help="Run in desktop dev mode 
                     RadioApp(),
                     UpdateApp(),
                     DebugApp(),
+                    PeripheralsApp(),
                 ]
                 app_manager = AppManager(apps)
                 hw = HardwareInterface(display, inputs, app_manager)

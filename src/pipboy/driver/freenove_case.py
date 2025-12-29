@@ -64,24 +64,29 @@ class FreenoveCase:
         return GPIOInput(mapping=self.cfg.input_mapping)
 
 
-def create_hardware(app_manager: Any, cfg: FreenoveConfig | None = None, spi: Any | None = None):
+def create_hardware(app_manager: Any, cfg: FreenoveConfig | None = None, spi: Any | None = None, use_backends: bool = False):
     """Convenience: create a fully wired HardwareInterface instance for the Freenove case.
 
+    If `use_backends` is True, attempt to instantiate real hardware backends (PWM, WS281x, I2C OLED, camera).
     This keeps the wiring code in one place for tests and simplifies app startup.
     """
     from ..interface.hardware_interface import HardwareInterface
     from .peripherals import FanController, LEDController, OLEDController, CameraInterface
+    from .backends import create_fan_backend, create_led_backend, create_oled_backend, create_camera_backend
 
     case = FreenoveCase(cfg=cfg, spi=spi)
     display = case.create_display()
     inputs = case.create_inputs()
 
-    # Create peripherals using reasonable defaults; actual hardware objects can be
-    # injected by passing platform-specific drivers into the controllers above.
-    fan = FanController(pin=None)
-    leds = LEDController()
-    oled = OLEDController(device=None)
-    camera = CameraInterface(backend=None)
+    fan_backend = create_fan_backend(cfg.input_mapping.get("fan_pin") if cfg and cfg.input_mapping else None) if use_backends else None
+    led_backend = create_led_backend() if use_backends else None
+    oled_backend = create_oled_backend() if use_backends else None
+    camera_backend = create_camera_backend() if use_backends else None
+
+    fan = FanController(pwm=fan_backend, pin=cfg.input_mapping.get("fan_pin") if cfg and cfg.input_mapping else None)
+    leds = LEDController(driver=led_backend)
+    oled = OLEDController(device=oled_backend)
+    camera = CameraInterface(backend=camera_backend)
 
     peripherals = {"fan": fan, "leds": leds, "oled": oled, "camera": camera}
 
