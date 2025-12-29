@@ -2,7 +2,7 @@
 
 Background
 ----------
-This repository was created by copying an existing project tree into `C:\Projects\pipboy` during prototyping. As a result, the repository currently contains many files from the original project (for example `epstein_downloader_gui.py`, Playwright scripts, tests for a different project, etc.).
+This repository was created by copying an existing project tree into `C:\Projects\pipboy` during prototyping. As a result, the repository currently contains many files from the original project (for example Playwright scripts, tests for a different project, etc.).
 
 Recommended options
 -------------------
