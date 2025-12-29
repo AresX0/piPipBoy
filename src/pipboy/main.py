@@ -41,7 +41,8 @@ def ensure_config():
 
 def main(argv: list[str] | None = None):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dev", action="store_true", help="Run in desktop dev mode (Tk)")
+parser.add_argument("--dev", action="store_true", help="Run in desktop dev mode (Tk)")
+    parser.add_argument("--profile", type=str, default=None, help="Hardware profile name (e.g., 'freenove')")
     args = parser.parse_args(argv)
 
     ensure_config()
@@ -82,20 +83,39 @@ def main(argv: list[str] | None = None):
             from .app.update import UpdateApp
             from .app.debug import DebugApp
 
-            display = ILI9486Display()
-            inputs = GPIOInput()
-            apps = [
-                FileManagerApp(),
-                MapApp(),
-                EnvironmentApp(sensors=sensors),
-                ClockApp(),
-                RadioApp(),
-                UpdateApp(),
-                DebugApp(),
-            ]
-            app_manager = AppManager(apps)
-            hw = HardwareInterface(display, inputs, app_manager)
-            hw.run()
+            # Support hardware profiles (e.g., freenove) for pre-wired setups
+            profile = args.profile
+            if profile == "freenove":
+                from .driver.freenove_case import create_hardware
+
+                app_manager = AppManager([
+                    FileManagerApp(),
+                    MapApp(),
+                    EnvironmentApp(sensors=sensors),
+                    ClockApp(),
+                    RadioApp(),
+                    UpdateApp(),
+                    DebugApp(),
+                ])
+                hw = create_hardware(app_manager)
+                # hw.peripherals available to apps via app_manager.peripherals
+                hw.run()
+            else:
+                display = ILI9486Display()
+                inputs = GPIOInput()
+                apps = [
+                    FileManagerApp(),
+                    MapApp(),
+                    EnvironmentApp(sensors=sensors),
+                    ClockApp(),
+                    RadioApp(),
+                    UpdateApp(),
+                    DebugApp(),
+                    PeripheralsApp(),
+                ]
+                app_manager = AppManager(apps)
+                hw = HardwareInterface(display, inputs, app_manager)
+                hw.run()
         except Exception as e:
             print("Hardware initialization failed:", e)
             print("Falling back to dev mode (Tk)")
