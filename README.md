@@ -1,6 +1,6 @@
 # piPipBoy
 
-piPipBoy ΓÇö A PipΓÇæBoyΓÇæstyle UI for Raspberry Pi 5
+piPipBoy  Raspberry Pi 5
 
 A retro, Fallout-inspired, PipΓÇæBoy-style user interface designed to run on Raspberry Pi 5 (Raspberry Pi OS / Debian Bookworm). This project provides a modular app framework (FileManager, Map, Environment, Clock, Radio, Update, Debug) with pluggable hardware interface drivers and a desktop Tk-based dev mode.
 
@@ -44,4 +44,5 @@ Screenshots
 
 Repository cleanup note
 - This repository's history was cleaned to remove several large binary artifacts (Playwright browsers, packaged executables, and other build artifacts) to improve clone/push performance. Non-core files were moved into `archive/` to keep the root focused. The application source is located at `src/pipboy/`; development scripts, tests, and resources required for local development and CI are available at the repository root or under `archive/` if previously archived.
+
 
