@@ -31,12 +31,17 @@ jobs:
           pip install PyYAML || true
       - name: Run dependency checks (warn only)
         run: python scripts/check_deps_ci.py --warn-only
-      - name: Run tests
+      - name: Run tests (Linux - xvfb)
+        if: runner.os == 'Linux'
         env:
           PYTHONPATH: src
         run: |
-          if [ -n "$(which xvfb-run 2>/dev/null)" ]; then
-            xvfb-run -s "-screen 0 1280x1024x24" python -m pytest -q
-          else
-            python -m pytest -q
-          fi
+          xvfb-run -s "-screen 0 1280x1024x24" python -m pytest -q
+
+      - name: Run tests (Windows)
+        if: runner.os == 'Windows'
+        env:
+          PYTHONPATH: src
+        shell: pwsh
+        run: |
+          python -m pytest -q
