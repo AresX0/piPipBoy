@@ -16,6 +16,9 @@ Hardware requirements
 - Optional SPI display (ILI9486-compatible), buttons and rotary encoder
 - Optional sensors: BME280 (I2C), DS3231 RTC (I2C), GPS (serial)
 
+Optional hardware
+- Additional optional hardware (camera, WS281x LED strips, SSD1306 OLED, gpio-based fans) can be installed on a Pi. See `docs/OPTIONAL-HARDWARE.md` for recommended packages and installation notes.
+
 Installation (Raspberry Pi)
 1. Clone: `git clone https://github.com/AresX0/piPipBoy /home/pi/pipboy`
 2. Create venv: `python3 -m venv venv && source venv/bin/activate`
