@@ -118,7 +118,6 @@ def main(argv: list[str] | None = None):
                     RadioApp(),
                     UpdateApp(),
                     DebugApp(),
-                    PeripheralsApp(),
                 ]
                 app_manager = AppManager(apps)
                 hw = HardwareInterface(display, inputs, app_manager)
