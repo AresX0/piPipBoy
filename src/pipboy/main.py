@@ -41,13 +41,11 @@ def ensure_config():
 
 def main(argv: list[str] | None = None):
     parser = argparse.ArgumentParser()
-parser.add_argument("--dev", action="store_true", help="Run in desktop dev mode (Tk)")
+    parser.add_argument("--dev", action="store_true", help="Run in desktop dev mode (Tk)")
     parser.add_argument("--profile", type=str, default=None, help="Hardware profile name (e.g., 'freenove')")
     args = parser.parse_args(argv)
 
-    ensure_config()
-
-    dev_mode = args.dev or (not is_raspberry_pi())
+    ensure_config()dev_mode = args.dev or (not is_raspberry_pi())
 
     # Initialize common sensors (I2C-backed and serial GPS)
     from .driver.i2c import I2C
@@ -127,3 +125,4 @@ parser.add_argument("--dev", action="store_true", help="Run in desktop dev mode 
 
 if __name__ == "__main__":
     main()
+
