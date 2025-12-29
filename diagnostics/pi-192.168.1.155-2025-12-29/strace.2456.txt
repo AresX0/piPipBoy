@@ -1,0 +1,15 @@
+(partial) Attached strace to PID 2456 (captured via remote strace).
+
+2456  17:42:40.888891 writev(4, [{iov_base="\2\0\4\0\16\0@\0\2\0\0\0\0\21\0\0X\0\4\0B\0\0\0\0\0\0\0D\25\2f\0<\0\2\0\304\221@\0X\0\4\0B\0\0\0\0\0\0\0f\377\231\0\212\7\2\0\316\221@\0.\0\2\0\301\221@\0<\0\2\0\302\221@\0<\0\2\0\303\221@\0T\0\4\0B\0\0\0\231\231\377\377ff\2\0", iov_len=104}, {iov_base=NULL, iov_len=0}, {iov_base="", iov_len=0}], 3) = 104
+2456  17:42:40.888924 ppoll([{fd=4, events=POLLIN}], 1, NULL, NULL, 0) = 1 ([{fd=4, revents=POLLIN}])
+2456  17:42:40.889085 recvmsg(4, {msg_name=NULL, msg_namelen=0, msg_iov=[{iov_base="\1\0\363\2\0\0\0\0\231\231\377\377ff\0\0f\377\231\0\0\0\0\0\0\0\0\0\0\0\0\0", iov_len=4096}], msg_iovlen=1, msg_controllen=0, msg_flags=0}, 0) = 32
+...
+[snip - many lines preserved in original capture]
+...
+2456  17:42:48.685875 exit_group(0)     = ?
+2465  17:42:48.685916 <... pselect6 resumed> <unfinished ...>) = ?
+2465  17:42:48.688009 +++ exited with 0 +++
+2456  17:42:48.688039 +++ exited with 0 +++
+
+Notes:
+- This is a partial strace extract captured during a 10s attach. Full /tmp/strace.2456 exists on the Pi at /tmp/strace.2456. Use it if needed for deeper review.
