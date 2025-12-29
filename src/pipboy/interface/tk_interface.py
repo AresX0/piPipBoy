@@ -48,6 +48,9 @@ class TkInterface:
         from pipboy.app.debug import DebugApp
         from .app_manager import AppManager
 
+        theme = self.config.get("themes", {}).get(self.config.get("theme", "green"), {})
+        fb_color = theme.get("feedback_fg", "#ffff66")
+        fb_duration = theme.get("feedback_duration", 0.5)
         self.app_manager = AppManager([
             FileManagerApp(),
             MapApp(),
@@ -56,7 +59,7 @@ class TkInterface:
             RadioApp(),
             UpdateApp(),
             DebugApp(),
-        ])
+        ], feedback_color=fb_color, feedback_duration=fb_duration)
 
     def load_config(self) -> None:
         try:
