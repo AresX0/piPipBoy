@@ -1,0 +1,29 @@
+# This file is generated/managed by piPipBoy on first run
+# Default colors/themes and device wiring
+theme: green
+themes:
+  green:
+    fg: "#99ff66"
+    bg: "#001100"
+    feedback_fg: "#ffff66"
+    feedback_duration: 0.5
+  amber:
+    fg: "#ffd24d"
+    bg: "#1a0f00"
+    feedback_fg: "#ffff66"
+    feedback_duration: 0.5
+display:
+  type: ili9486
+  rotation: 0
+input:
+  type: gpio
+  mapping:
+    up: 5
+    down: 6
+    left: 16
+    right: 20
+    select: 13
+    back: 19
+    rotary_a: 17
+    rotary_b: 27
+    rotary_sw: 22
