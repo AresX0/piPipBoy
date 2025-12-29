@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "pipboy"
+version = "0.1.0"
+description = "Pip-Boy-style UI for Raspberry Pi 5"
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "W", "C", "B"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-q"
+basetemp = "build/pytest"

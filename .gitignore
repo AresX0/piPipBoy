@@ -1,13 +1,4 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
 
-# Ignore local backups and large bundles
-backups/
+# Secrets and credentials
+credentials.json
 
-# Ignore build artifacts and executable distributions
-dist/
-bin/
-*.exe
-*.bundle
