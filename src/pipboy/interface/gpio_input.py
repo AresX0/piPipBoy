@@ -17,6 +17,23 @@ except Exception:
 
 
 class GPIOInput:
+    def close(self):
+        try:
+            for b in getattr(self, 'buttons', {}).values():
+                try:
+                    b.close()
+                except Exception:
+                    pass
+            self.buttons = {}
+        except Exception:
+            pass
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
     def __init__(self, mapping: dict | None = None, debounce: float = 0.01):
         self.mapping = mapping or {"up": 5, "down": 6, "select": 13}
         self.handlers: dict[str, Callable[[], None]] = {}

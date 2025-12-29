@@ -45,7 +45,9 @@ def main(argv: list[str] | None = None):
     parser.add_argument("--profile", type=str, default=None, help="Hardware profile name (e.g., 'freenove')")
     args = parser.parse_args(argv)
 
-    ensure_config()dev_mode = args.dev or (not is_raspberry_pi())
+    ensure_config()
+
+    dev_mode = args.dev or (not is_raspberry_pi())
 
     # Initialize common sensors (I2C-backed and serial GPS)
     from .driver.i2c import I2C
@@ -67,6 +69,13 @@ def main(argv: list[str] | None = None):
         ui.run()
     else:
         print(f"piPipBoy {__version__} — starting on Raspberry Pi hardware")
+        # Prefer lgpio pin factory on Pi 5 / newer systems when available
+        try:
+            import lgpio  # type: ignore
+            os.environ.setdefault('GPIOZERO_PIN_FACTORY', 'lgpio')
+            print("Using lgpio for gpiozero pin factory")
+        except Exception:
+            pass
         # Import real hardware interfaces and wire them to an AppManager
         try:
             from .interface.ili9486_display import ILI9486Display
@@ -88,9 +97,9 @@ def main(argv: list[str] | None = None):
 
                 app_manager = AppManager([
                     FileManagerApp(),
-                    MapApp(),
+                    MapApp(sensors=sensors),
                     EnvironmentApp(sensors=sensors),
-                    ClockApp(),
+                    ClockApp(sensors=sensors),
                     RadioApp(),
                     UpdateApp(),
                     DebugApp(),
@@ -103,9 +112,9 @@ def main(argv: list[str] | None = None):
                 inputs = GPIOInput()
                 apps = [
                     FileManagerApp(),
-                    MapApp(),
+                    MapApp(sensors=sensors),
                     EnvironmentApp(sensors=sensors),
-                    ClockApp(),
+                    ClockApp(sensors=sensors),
                     RadioApp(),
                     UpdateApp(),
                     DebugApp(),
@@ -125,4 +134,7 @@ def main(argv: list[str] | None = None):
 
 if __name__ == "__main__":
     main()
+
+
+
 
