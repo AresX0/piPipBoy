@@ -1,0 +1,19 @@
+# Optional hardware dependencies for Raspberry Pi (install only on Pi when needed)
+# Suggested packages:
+# - picamera2      (camera support on Raspberry Pi OS)
+# - opencv-python  (cv2 fallback for cameras)
+# - rpi_ws281x      (WS281x LED strips)
+# - luma.oled       (I2C OLED displays)
+# - gpiozero        (GPIO / PWM helpers) or RPi.GPIO
+# - pillow          (PIL, used by luma and image encoding)
+
+picamera2
+opencv-python
+rpi_ws281x
+luma.oled
+gpiozero
+pillow
+
+# Note: Some packages require system libraries (libjpeg-dev, libopenjp2-7-dev)
+# and/or additional build tools. Use the example install steps in
+# docs/OPTIONAL-HARDWARE.md for guidance.

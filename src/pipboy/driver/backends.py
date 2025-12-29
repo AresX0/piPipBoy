@@ -3,6 +3,18 @@
 Provide helpers that attempt to create real hardware drivers when running on a
 Raspberry Pi with the proper libraries installed. All imports are attempted at
 runtime and failures fall back to None so code remains testable on CI.
+
+Optional runtime dependencies (install on a Pi if you want hardware support):
+- picamera2 (camera support) or opencv-python (cv2 fallback)
+- rpi_ws281x (WS281x LED strips)
+- luma.oled (I2C/OLED text displays) and pillow (PIL)
+- gpiozero or RPi.GPIO (PWM / GPIO control)
+
+Install example (on Raspberry Pi):
+    sudo apt-get update && sudo apt-get install -y libjpeg-dev libopenjp2-7-dev
+    pip install picamera2 opencv-python rpi_ws281x luma.oled gpiozero pillow
+
+See docs/OPTIONAL-HARDWARE.md for more details and wiring notes.
 """
 from __future__ import annotations
 from typing import Any, Tuple
