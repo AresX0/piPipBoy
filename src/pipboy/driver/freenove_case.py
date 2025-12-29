@@ -70,8 +70,27 @@ def create_hardware(app_manager: Any, cfg: FreenoveConfig | None = None, spi: An
     This keeps the wiring code in one place for tests and simplifies app startup.
     """
     from ..interface.hardware_interface import HardwareInterface
+    from .peripherals import FanController, LEDController, OLEDController, CameraInterface
 
     case = FreenoveCase(cfg=cfg, spi=spi)
     display = case.create_display()
     inputs = case.create_inputs()
-    return HardwareInterface(display=display, inputs=inputs, app_manager=app_manager)
+
+    # Create peripherals using reasonable defaults; actual hardware objects can be
+    # injected by passing platform-specific drivers into the controllers above.
+    fan = FanController(pin=None)
+    leds = LEDController()
+    oled = OLEDController(device=None)
+    camera = CameraInterface(backend=None)
+
+    peripherals = {"fan": fan, "leds": leds, "oled": oled, "camera": camera}
+
+    hw = HardwareInterface(display=display, inputs=inputs, app_manager=app_manager)
+    # Attach peripherals to the hardware interface and app_manager for easy access
+    hw.peripherals = peripherals
+    try:
+        # Also provide a convenience reference on the AppManager so apps can access peripherals
+        app_manager.peripherals = peripherals
+    except Exception:
+        pass
+    return hw
