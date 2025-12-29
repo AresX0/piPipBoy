@@ -6,16 +6,29 @@ from pipboy.driver import backends
 
 
 def is_raspberry_pi() -> bool:
-    # Allow explicit opt-in
-    if os.environ.get("RUN_PI_HARDWARE_TESTS") in ("1", "true", "True"):
+    """Detect whether tests are running on a Raspberry Pi.
+
+    Primary detection: read /proc/device-tree/model on Linux and look for
+    'raspberry' in the model string. If that fails, allow an explicit opt-in
+    via environment variable `RUN_PI_HARDWARE_TESTS=1` (useful for forcing tests
+    on custom hardware or during local experimentation).
+    """
+    if platform.system() == "Linux":
+        try:
+            with open("/proc/device-tree/model", "rb") as f:
+                model = f.read().lower()
+                if b"raspberry" in model or b"raspberry pi" in model:
+                    return True
+        except Exception:
+            # Fall back to env var override if model file not readable
+            pass
+
+    val = os.environ.get("RUN_PI_HARDWARE_TESTS")
+    if val and val.lower() in ("1", "true", "yes", "on"):
         return True
-    if platform.system() != "Linux":
-        return False
-    try:
-        with open("/proc/device-tree/model", "rb") as f:
-            return b"Raspberry" in f.read() or b"Raspberry Pi" in f.read()
-    except Exception:
-        return False
+
+    # Default: not a Raspberry Pi
+    return False
 
 
 pytestmark = pytest.mark.skipif(not is_raspberry_pi(), reason="Raspberry Pi hardware tests skipped; set RUN_PI_HARDWARE_TESTS=1 to force")
