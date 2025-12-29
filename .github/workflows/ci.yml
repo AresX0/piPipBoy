@@ -23,7 +23,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-tk
+          sudo apt-get install -y python3-tk xvfb
       - name: Install pip deps
         run: |
           python -m pip install --upgrade pip
@@ -34,4 +34,9 @@ jobs:
       - name: Run tests
         env:
           PYTHONPATH: src
-        run: python -m pytest -q
+        run: |
+          if [ -n "$(which xvfb-run 2>/dev/null)" ]; then
+            xvfb-run -s "-screen 0 1280x1024x24" python -m pytest -q
+          else
+            python -m pytest -q
+          fi
