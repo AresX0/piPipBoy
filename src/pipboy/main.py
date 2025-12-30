@@ -144,7 +144,8 @@ def main(argv: list[str] | None = None):
         repo_icons = Path(__file__).parent.parent / "resources" / "icons"
         src_icons = Path(__file__).parent / "resources" / "icons"
         for name in ("Camera", "FileManager", "Lights", "Fan", "Display"):
-            find_or_create_icon(name, [src_icons, repo_icons])
+            p = find_or_create_icon(name, [src_icons, repo_icons])
+            print(f"Icon for {name}: {p}")
 
         ui = TkInterface(CONFIG_PATH, sensors=sensors)
         ui.run()
