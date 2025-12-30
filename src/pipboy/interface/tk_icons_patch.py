@@ -165,5 +165,10 @@ def attach_icon_support(ui: Any) -> None:
             inst._load_icons()
         except Exception:
             pass
+        # Also render icon bar if possible
+        try:
+            inst._render_icon_bar()
+        except Exception:
+            pass
 
     setattr(ui.__class__, "app_manager", property(_get_app_manager, _set_app_manager))
