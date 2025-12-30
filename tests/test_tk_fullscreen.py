@@ -21,7 +21,20 @@ def test_tkinterface_sets_fullscreen(monkeypatch, tmp_path):
         def mainloop(self):
             pass
 
+    class FakeCanvas:
+        def __init__(self, master=None, **kwargs):
+            self.master = master
+        def pack(self):
+            pass
+        def create_text(self, *a, **k):
+            pass
+        def config(self, **k):
+            pass
+        def delete(self, *a, **k):
+            pass
+
     monkeypatch.setattr('tkinter.Tk', FakeTk)
+    monkeypatch.setattr('tkinter.Canvas', FakeCanvas)
     from pipboy.interface.tk_interface import TkInterface
 
     cfg = tmp_path / "cfg.yaml"

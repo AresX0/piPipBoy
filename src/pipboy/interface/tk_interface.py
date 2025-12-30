@@ -63,6 +63,24 @@ class TkInterface:
         # Load available icons (best-effort)
         self.icons: dict[str, Any] = {}
         self._load_icons()
+
+        # Touch / click support
+        ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
+        self.touch_enabled = ui_conf.get("touch", False)
+        self.touch_target = int(ui_conf.get("touch_target", 48))
+        # Bind mouse/touch events for dev UI
+        try:
+            self.root.bind("<Button-1>", self._on_click)
+            self.root.bind("<ButtonPress-1>", self._on_touch_start)
+            self.root.bind("<B1-Motion>", self._on_touch_move)
+            self.root.bind("<ButtonRelease-1>", self._on_touch_end)
+        except Exception:
+            # Ignore if binding not supported in test environments
+            pass
+
+        # Touch gesture state
+        self._touch_start = None
+        self._touch_last = None
         # Create app manager with basic apps; inject sensors into EnvironmentApp
         from pipboy.app.file_manager import FileManagerApp
         from pipboy.app.map import MapApp
@@ -122,6 +140,11 @@ class TkInterface:
         self.canvas.config(bg=bg)
         self.canvas.delete("all")
         self.draw_text(10, 10, "piPipBoy - DEV MODE", fg=fg)
+        # Draw a simple tab bar background to make click area obvious
+        try:
+            self.canvas.create_rectangle(0, 0, 480, 36, fill=bg, outline=bg)
+        except Exception:
+            pass
 
         # If feedback is active, compute pulsing blend between fg and fb_color
         if self.app_manager._is_feedback_active():
@@ -149,3 +172,50 @@ class TkInterface:
         self.root.bind("<Return>", lambda e: self.app_manager.handle_input("select"))
         self._tick()
         self.root.mainloop()
+
+    # Touch / click handlers
+    def _tab_index_at(self, x: int, y: int) -> int | None:
+        """Return tab index at given x,y or None if outside tab area."""
+        # Tab bar is at y ~ 10..36 and each slot is 60px wide starting at x=10
+        if not (0 <= y <= 36):
+            return None
+        idx = (x - 10) // 60
+        if idx < 0:
+            return None
+        if idx >= len(self.app_manager.apps):
+            return None
+        return int(idx)
+
+    def _on_click(self, event) -> None:
+        try:
+            idx = self._tab_index_at(event.x, event.y)
+            if idx is not None:
+                self.app_manager.select(idx)
+                return
+            # Otherwise, send a generic touch event to the app
+            try:
+                self.app_manager.handle_input({"type": "touch", "x": event.x, "y": event.y})
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+    def _on_touch_start(self, event) -> None:
+        self._touch_start = (event.x, event.y)
+        self._touch_last = (event.x, event.y)
+
+    def _on_touch_move(self, event) -> None:
+        self._touch_last = (event.x, event.y)
+
+    def _on_touch_end(self, event) -> None:
+        if self._touch_start and self._touch_last:
+            dx = event.x - self._touch_start[0]
+            dy = event.y - self._touch_start[1]
+            if abs(dx) > 40 and abs(dx) > abs(dy):
+                # horizontal swipe
+                if dx > 0:
+                    self.app_manager.prev()
+                else:
+                    self.app_manager.next()
+        self._touch_start = None
+        self._touch_last = None

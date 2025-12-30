@@ -22,6 +22,7 @@ DEFAULT_CONFIG = {
     },
     "display": {"type": "ili9486", "rotation": 0},
     "input": {"type": "gpio"},
+    "ui": {"fullscreen": False, "touch": False, "touch_target": 48},
 }
 
 

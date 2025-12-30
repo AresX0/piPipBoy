@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("tkinter")
 from pipboy.interface.tk_interface import TkInterface
 from pipboy.driver.sensors.bme280 import BME280
 

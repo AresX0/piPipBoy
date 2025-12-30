@@ -30,6 +30,12 @@ class AppManager:
         self.index = (self.index - 1) % len(self.apps)
         self.feedback()
 
+    def select(self, index: int) -> None:
+        """Select a specific app index and trigger feedback."""
+        if not self.apps:
+            return
+        self.index = max(0, min(len(self.apps) - 1, int(index)))
+        self.feedback()
     def feedback(self) -> None:
         import time
 
@@ -79,10 +85,10 @@ class AppManager:
             # Render optional icon if available on the rendering context
             icon_drawn = False
             try:
-                key = label.lower()
-                if hasattr(ctx, "icons") and key in ctx.icons and hasattr(ctx, "canvas"):
+                full_key = getattr(app, "name", f"app{i}").lower()
+                if hasattr(ctx, "icons") and full_key in ctx.icons and hasattr(ctx, "canvas"):
                     try:
-                        ctx.canvas.create_image(x, y, image=ctx.icons[key], anchor="nw")
+                        ctx.canvas.create_image(x, y, image=ctx.icons[full_key], anchor="nw")
                         icon_drawn = True
                     except Exception:
                         # ignore icon drawing errors
