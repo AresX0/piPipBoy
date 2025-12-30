@@ -51,9 +51,11 @@ def attach_icon_support(ui: Any) -> None:
     # Attach the loader
     ui._load_icons = _load_icons
 
-    # If app_manager already present, load icons now
-    if getattr(ui, "app_manager", None) is not None:
+    # Load icons immediately (defaults + app names if present)
+    try:
         ui._load_icons()
+    except Exception:
+        pass
 
     # Add a property to intercept assignments to `app_manager`
     def _get_app_manager():
