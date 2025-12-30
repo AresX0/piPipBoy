@@ -42,6 +42,103 @@ def attach_icon_support(ui: Any) -> None:
             if p is None:
                 continue
             ui._icons[name] = str(p)
+
+        # Prepare image cache and rendering helpers
+        ui._tk_images = {}
+        ui._icon_items = []
+        ui.icon_size = getattr(ui, 'icon_size', 36)  # default compact size (px)
+
+        def _get_tk_image(path: str, size: int):
+            # Return a tkinter-compatible PhotoImage sized to (size, size)
+            try:
+                from PIL import Image, ImageTk
+            except Exception:
+                Image = None
+                ImageTk = None
+            try:
+                if Image is not None:
+                    img = Image.open(path).convert('RGBA')
+                    img = img.resize((size, size), Image.LANCZOS)
+                    tkimg = ImageTk.PhotoImage(img)
+                else:
+                    # fallback: use tkinter.PhotoImage and rely on subsample (approximate)
+                    import tkinter as tk
+                    tkimg = tk.PhotoImage(file=path)
+                    # try integer subsample to make it reasonably small
+                    try:
+                        w = tkimg.width()
+                        if w > size:
+                            subs = max(1, int(round(w / size)))
+                            tkimg = tkimg.subsample(subs, subs)
+                    except Exception:
+                        pass
+                return tkimg
+            except Exception:
+                return None
+
+        def _render_icon_bar():
+            # Draw icons centered along bottom, avoiding overlap.
+            try:
+                canvas = getattr(ui, 'canvas', None)
+                if canvas is None:
+                    return
+                width = None
+                try:
+                    width = int(canvas.kwargs.get('width', 800))
+                except Exception:
+                    try:
+                        width = int(canvas.master.winfo_width())
+                    except Exception:
+                        width = 800
+                names = list(ui._icons.keys())
+                if not names:
+                    return
+                # Determine per-icon size so they fit with small padding
+                max_icon_w = ui.icon_size
+                total_space = width - 20
+                per_slot = max(16, total_space // len(names))
+                size = min(max_icon_w, per_slot - 8)
+                if size < 8:
+                    size = 8
+                # Clear previous icon items
+                try:
+                    for item in getattr(ui, '_icon_items', []):
+                        try:
+                            canvas.delete(item)
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+                ui._icon_items = []
+                ui._tk_images = ui._tk_images or {}
+                # compute x positions evenly across width
+                gap = total_space // (len(names) + 1)
+                x = 10 + gap
+                y = int(canvas.kwargs.get('height', 600)) - 8
+                for name in names:
+                    path = ui._icons.get(name)
+                    if path is None:
+                        continue
+                    key = (path, size)
+                    img = ui._tk_images.get(key)
+                    if img is None:
+                        img = _get_tk_image(path, size)
+                        if img is None:
+                            continue
+                        ui._tk_images[key] = img
+                    try:
+                        item = canvas.create_image(x, y, image=img, anchor='s')
+                        # optional label above
+                        canvas.create_text(x, y - (size // 2) - 6, text=name, fill='#99ff66')
+                        ui._icon_items.append(item)
+                    except Exception:
+                        pass
+                    x += gap
+            except Exception:
+                pass
+
+        ui._render_icon_bar = _render_icon_bar
+
         # Print a small summary for logs
         try:
             print("Loaded icons:", {k: v for k, v in ui._icons.items()})
