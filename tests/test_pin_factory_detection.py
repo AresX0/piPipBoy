@@ -20,7 +20,9 @@ def _clear_env():
 
 def test_prefers_lgpio(monkeypatch):
     # Simulate lgpio present
-    sys.modules.pop('lgpio', None)
+    for m in list(sys.modules.keys()):
+        if m == 'lgpio' or m.startswith('lgpio.'):
+            sys.modules.pop(m, None)
     sys.modules.pop('pigpio', None)
     sys.modules['lgpio'] = types.ModuleType('lgpio')
     _clear_env()
@@ -31,7 +33,9 @@ def test_prefers_lgpio(monkeypatch):
 
 def test_pigpio_connected(monkeypatch):
     # Ensure lgpio absent and pigpio present with connected=True
-    sys.modules.pop('lgpio', None)
+    for m in list(sys.modules.keys()):
+        if m == 'lgpio' or m.startswith('lgpio.'):
+            sys.modules.pop(m, None)
 
     # Ensure import of lgpio fails so we exercise pigpio code even if lgpio is
     # installed on the test runner (e.g., on the Pi).
@@ -63,7 +67,9 @@ def test_pigpio_connected(monkeypatch):
 
 
 def test_pigpio_not_connected(monkeypatch):
-    sys.modules.pop('lgpio', None)
+    for m in list(sys.modules.keys()):
+        if m == 'lgpio' or m.startswith('lgpio.'):
+            sys.modules.pop(m, None)
 
     # Ensure import of lgpio fails so we exercise pigpio code even if lgpio is
     # installed on the test runner (e.g., on the Pi).
