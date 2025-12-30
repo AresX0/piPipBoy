@@ -24,7 +24,8 @@ def test_prefers_lgpio(monkeypatch):
     sys.modules.pop('pigpio', None)
     sys.modules['lgpio'] = types.ModuleType('lgpio')
     _clear_env()
-    main.choose_gpio_pin_factory()
+    # force the selection to run inside pytest
+    main.choose_gpio_pin_factory(force=True)
     assert os.environ.get('GPIOZERO_PIN_FACTORY') == 'lgpio'
 
 
@@ -39,7 +40,7 @@ def test_pigpio_connected(monkeypatch):
     sys.modules['pigpio'] = mod
 
     _clear_env()
-    main.choose_gpio_pin_factory()
+    main.choose_gpio_pin_factory(force=True)
     assert os.environ.get('GPIOZERO_PIN_FACTORY') == 'pigpio'
 
 
@@ -54,7 +55,7 @@ def test_pigpio_not_connected(monkeypatch):
     sys.modules['pigpio'] = mod
 
     _clear_env()
-    main.choose_gpio_pin_factory()
+    main.choose_gpio_pin_factory(force=True)
     assert os.environ.get('GPIOZERO_PIN_FACTORY') is None
 
 
@@ -69,6 +70,6 @@ def test_pigpio_init_failure_logs(monkeypatch, capsys):
     sys.modules['pigpio'] = mod
 
     _clear_env()
-    main.choose_gpio_pin_factory()
+    main.choose_gpio_pin_factory(force=True)
     captured = capsys.readouterr()
     assert "failed to initialize" in captured.out or "mmap" in captured.out

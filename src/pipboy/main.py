@@ -26,6 +26,47 @@ DEFAULT_CONFIG = {
 }
 
 
+def choose_gpio_pin_factory(force: bool = False):
+    """Choose a GPIOZERO pin factory.
+
+    Preference order: lgpio -> pigpio (only if pigpiod is connected) -> default.
+    When running under pytest we avoid mutating the environment unless `force=True` is
+    passed — this prevents tests from accidentally claiming real GPIO hardware during
+    the unit test process.
+    """
+    # If running under pytest and not forced, skip automatic selection to avoid
+    # claiming hardware pins used by other processes or test fixtures.
+    if not force and os.environ.get('PYTEST_CURRENT_TEST'):
+        print("Running under pytest; skipping automatic pin-factory selection (use force=True to override)")
+        return
+
+    try:
+        import lgpio  # type: ignore
+        os.environ.setdefault('GPIOZERO_PIN_FACTORY', 'lgpio')
+        print("Using lgpio for gpiozero pin factory")
+        return
+    except Exception:
+        # lgpio not available; continue to pigpio probe
+        pass
+
+    try:
+        import pigpio  # type: ignore
+        print("pigpio module found; attempting to connect to pigpiod")
+        try:
+            pi_instance = pigpio.pi()
+            if getattr(pi_instance, "connected", False):
+                os.environ.setdefault('GPIOZERO_PIN_FACTORY', 'pigpio')
+                print("Using pigpio for gpiozero pin factory (pigpiod connected)")
+            else:
+                print("pigpio present but pigpiod not connected; skipping pigpio pin factory")
+        except Exception as e:
+            # Helpful message for pigpiod init errors (e.g., DMA mmap failures on Pi 5)
+            print("pigpio found but pigpiod failed to initialize:", e)
+    except Exception:
+        # No pigpio available; leave default factory
+        pass
+
+
 def is_raspberry_pi() -> bool:
     # Simple heuristic: presence of /proc/device-tree/model and 'Raspberry' in it
     try:
