@@ -1,4 +1,8 @@
 import pytest
+import os
+
+if not os.environ.get('RUN_PI_HARDWARE_TESTS') or os.environ.get('RUN_PI_HARDWARE_TESTS') in ("0", "false", "False"):
+    pytest.skip('RUN_PI_HARDWARE_TESTS not set; skipping freenove tests', allow_module_level=True)
 
 from pipboy.driver.freenove_case import FreenoveConfig, FreenoveCase
 
