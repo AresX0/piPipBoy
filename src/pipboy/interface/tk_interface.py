@@ -30,14 +30,39 @@ def _blend_hex(h1: str, h2: str, factor: float) -> str:
 
 
 class TkInterface:
-    def __init__(self, config_path: Path, sensors: dict | None = None):
+    def __init__(self, config_path: Path, sensors: dict | None = None, fullscreen: bool | None = None):
+        """Tk-based development interface.
+
+        Args:
+            config_path: Path to the YAML config file
+            sensors: optional sensor dict injected into EnvironmentApp
+            fullscreen: override config to force fullscreen mode; None to use config
+        """
         self.config_path = config_path
         self.sensors = sensors or {}
+        # Create root early so tests can monkeypatch attributes
         self.root = tk.Tk()
         self.root.title("piPipBoy - DEV MODE")
         self.canvas = tk.Canvas(self.root, width=480, height=320, bg="#001100")
         self.canvas.pack()
         self.load_config()
+
+        # Determine fullscreen preference: explicit arg > config file
+        ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
+        fullscreen_pref = fullscreen if fullscreen is not None else ui_conf.get("fullscreen", False)
+        if fullscreen_pref:
+            try:
+                self.root.attributes("-fullscreen", True)
+            except Exception:
+                # Fallback for platforms where -fullscreen is unsupported
+                try:
+                    self.root.state("zoomed")
+                except Exception:
+                    pass
+
+        # Load available icons (best-effort)
+        self.icons: dict[str, Any] = {}
+        self._load_icons()
         # Create app manager with basic apps; inject sensors into EnvironmentApp
         from pipboy.app.file_manager import FileManagerApp
         from pipboy.app.map import MapApp
@@ -64,9 +89,24 @@ class TkInterface:
     def load_config(self) -> None:
         try:
             with open(self.config_path, "r") as f:
-                self.config = yaml.safe_load(f)
+                self.config = yaml.safe_load(f) or {}
         except Exception:
             self.config = {"theme": "green"}
+
+    def _load_icons(self) -> None:
+        """Load app icons from resources/icons (best-effort)."""
+        try:
+            base = Path(__file__).parent.parent.parent / "resources" / "icons"
+            if base.exists() and base.is_dir():
+                for p in base.glob("*.png"):
+                    try:
+                        self.icons[p.stem] = tk.PhotoImage(file=str(p))
+                    except Exception:
+                        # ignore images that fail to load
+                        pass
+        except Exception:
+            # Don't fail UI for missing icons
+            pass
 
     def draw_text(self, x: int, y: int, text: str, fg: str = "#99ff66") -> None:
         self.canvas.create_text(x, y, anchor="nw", text=text, fill=fg, font=("Courier", 12))
