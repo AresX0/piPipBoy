@@ -36,7 +36,8 @@ def attach_icon_support(ui: Any) -> None:
             except Exception:
                 apps = []
         # Always ensure the common icons are present
-        targets = sorted(set(apps + ["Camera", "FileManager", "Lights", "Fan", "Display", "exit", "clock", "debug", "radio", "settings"]))
+        targets = sorted(set(apps + ["Camera", "FileManager", "Lights", "Fan", "Display", "exit", "clock", "debug",
+            "radio", "settings"]))
         for name in targets:
             p = find_or_create_icon(name, [src_icons, repo_icons])
             if p is None:
@@ -183,7 +184,7 @@ def attach_icon_support(ui: Any) -> None:
                             except Exception:
                                 iw = ih = None
                             try:
-                                print(f"Placing icon '{name}' at ({x},{y}) img_size={iw}x{ih} target={size}")
+                                print(f"Placing icon '{name}' at ({x},{y}) img_size={iw}x{ih} target={size}")      
                             except Exception:
                                 pass
                             item = canvas.create_image(x, y, image=img, anchor='s')
@@ -206,6 +207,17 @@ def attach_icon_support(ui: Any) -> None:
         try:
             canvas = getattr(ui, 'canvas', None)
             if canvas is not None and hasattr(canvas.master, 'after'):
+                # bind once to respond to resizes
+                try:
+                    if not getattr(ui, '_icon_bind_set', False):
+                        try:
+                            canvas.bind('<Configure>', lambda e: ui._render_icon_bar())
+                        except Exception:
+                            pass
+                        ui._icon_bind_set = True
+                except Exception:
+                    pass
+
                 def _attempt_render(attempts=[0]):
                     try:
                         ui._render_icon_bar()
@@ -225,7 +237,7 @@ def attach_icon_support(ui: Any) -> None:
                                 png_path = str(diag / 'pipboy_canvas_internal.png')
                                 try:
                                     canvas.postscript(file=ps_path, colormode='color')
-                                    # Try to convert via PIL (requires Ghostscript or ImageMagick fallback)
+                                    # Try to convert via PIL (requires Ghostscript or ImageMagick fallback)        
                                     try:
                                         from PIL import Image
                                         img = Image.open(ps_path)
@@ -292,7 +304,18 @@ def attach_icon_support(ui: Any) -> None:
 
     # Add a property to intercept assignments to `app_manager`
     def _get_app_manager(inst):
-        return getattr(inst, "_app_manager_internal", None)
+        am = getattr(inst, "_app_manager_internal", None)
+        if am is None:
+            # Lightweight proxy to avoid crashes before the real manager is assigned
+            class _Proxy:
+                apps = []
+                def _is_feedback_active(self):
+                    return False
+                def __getattr__(self, name):
+                    # Provide a callable that returns False for unknown methods
+                    return lambda *a, **k: False
+            return _Proxy()
+        return am
 
     def _set_app_manager(inst, val):
         setattr(inst, "_app_manager_internal", val)
