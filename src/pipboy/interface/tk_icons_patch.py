@@ -47,7 +47,7 @@ def attach_icon_support(ui: Any) -> None:
         # Prepare image cache and rendering helpers
         ui._tk_images = {}
         ui._icon_items = []
-        ui.icon_size = getattr(ui, 'icon_size', 36)  # default compact size (px)
+        ui.icon_size = getattr(ui, 'icon_size', 24)  # default icon size (px) on Pi/desktop
 
         def _get_tk_image(path: str, size: int):
             # Return a tkinter-compatible PhotoImage sized to (size, size)
@@ -106,7 +106,7 @@ def attach_icon_support(ui: Any) -> None:
 
                 n = len(names)
                 # Icon size (allow override via ui.icon_size)
-                size = getattr(ui, 'icon_size', 12)
+                size = getattr(ui, 'icon_size', 24)
                 padding = 8
                 bottom_padding = 10
                 row_spacing = size + 8
