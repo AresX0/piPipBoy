@@ -70,9 +70,10 @@ class TkInterface:
                 except Exception:
                     pass
 
-        # Load available icons (best-effort)
+        # Load available icons (best-effort) from either src/resources/icons or repo-root resources/icons
         self.icons: dict[str, Any] = {}
         self._load_icons()
+
 
         # Touch / click support
         ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
@@ -105,15 +106,18 @@ class TkInterface:
         theme = self.config.get("themes", {}).get(self.config.get("theme", "green"), {})
         fb_color = theme.get("feedback_fg", "#ffff66")
         fb_duration = theme.get("feedback_duration", 0.5)
-        self.app_manager = AppManager([
-            FileManagerApp(),
-            MapApp(),
-            EnvironmentApp(sensors=self.sensors),
-            ClockApp(),
-            RadioApp(),
-            UpdateApp(),
-            DebugApp(),
-            SettingsApp(),
+from pipboy.app.exit_app import ExitApp
+
+            self.app_manager = AppManager([
+                FileManagerApp(),
+                MapApp(),
+                EnvironmentApp(sensors=self.sensors),
+                ClockApp(),
+                RadioApp(),
+                UpdateApp(),
+                DebugApp(),
+                SettingsApp(),
+                ExitApp(),
         ], feedback_color=fb_color, feedback_duration=fb_duration)
 
     def load_config(self) -> None:
@@ -124,16 +128,24 @@ class TkInterface:
             self.config = {"theme": "green"}
 
     def _load_icons(self) -> None:
-        """Load app icons from resources/icons (best-effort)."""
+        """Load app icons from resources/icons (best-effort).
+
+        Search both src/resources/icons and repo-root resources/icons so user-supplied
+        icons placed at project root are discovered.
+        """
         try:
-            base = Path(__file__).parent.parent.parent / "resources" / "icons"
-            if base.exists() and base.is_dir():
-                for p in base.glob("*.png"):
-                    try:
-                        self.icons[p.stem] = tk.PhotoImage(file=str(p))
-                    except Exception:
-                        # ignore images that fail to load
-                        pass
+            candidates = [
+                Path(__file__).parent.parent.parent / "resources" / "icons",
+                Path(__file__).parent.parent.parent.parent / "resources" / "icons",
+            ]
+            for base in candidates:
+                if base.exists() and base.is_dir():
+                    for p in base.glob("*.png"):
+                        try:
+                            self.icons[p.stem] = tk.PhotoImage(file=str(p))
+                        except Exception:
+                            # ignore images that fail to load
+                            pass
         except Exception:
             # Don't fail UI for missing icons
             pass
