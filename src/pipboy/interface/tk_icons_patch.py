@@ -196,6 +196,24 @@ def attach_icon_support(ui: Any) -> None:
                                     print(f"Icon bbox for '{name}': {bbox}")
                                 except Exception:
                                     pass
+                                # Optional: draw visible debug markers when env var set so we can
+                                # visually verify position/size on remote Pi screenshots
+                                try:
+                                    import os
+                                    if os.environ.get('PIPBOY_ICON_DEBUG'):
+                                        try:
+                                            # small rectangle above anchor point (anchor='s')
+                                            r = canvas.create_rectangle(x - size//2, y - size, x + size//2, y, outline='red', width=1)
+                                            t = canvas.create_text(x, y - size - 6, text=name[:1], fill='red')
+                                            # keep debug items separate
+                                            ui._icon_debug_items = getattr(ui, '_icon_debug_items', [])
+                                            ui._icon_debug_items.extend([r, t])
+                                            canvas.tag_raise(r)
+                                            canvas.tag_raise(t)
+                                        except Exception:
+                                            pass
+                                except Exception:
+                                    pass
 
         # Schedule re-render attempts until icons are actually placed on canvas
         try:
