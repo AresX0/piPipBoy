@@ -58,14 +58,14 @@ def attach_icon_support(ui: Any) -> None:
         pass
 
     # Add a property to intercept assignments to `app_manager`
-    def _get_app_manager():
-        return getattr(ui, "_app_manager_internal", None)
+    def _get_app_manager(inst):
+        return getattr(inst, "_app_manager_internal", None)
 
-    def _set_app_manager(val):
-        setattr(ui, "_app_manager_internal", val)
+    def _set_app_manager(inst, val):
+        setattr(inst, "_app_manager_internal", val)
         # Trigger icon load on assignment
         try:
-            ui._load_icons()
+            inst._load_icons()
         except Exception:
             pass
 
