@@ -139,6 +139,18 @@ def attach_icon_support(ui: Any) -> None:
 
         ui._render_icon_bar = _render_icon_bar
 
+        # If we have access to a Tk 'after', schedule a delayed re-render to catch
+        # layout finalization (canvas size might not be set at attach time).
+        try:
+            canvas = getattr(ui, 'canvas', None)
+            if canvas is not None and hasattr(canvas.master, 'after'):
+                try:
+                    canvas.master.after(500, ui._render_icon_bar)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
         # Print a small summary for logs
         try:
             print("Loaded icons:", {k: v for k, v in ui._icons.items()})
