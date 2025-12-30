@@ -52,7 +52,28 @@ def test_fan_backend_operates():
 
 def test_led_backend_operates():
     lb = backends.create_led_backend()
-    assert lb is not None, "LED backend not available"
+
+    # If factory returned None, check whether the rpi_ws281x library exists and
+    # whether initialization failed due to unsupported hardware (e.g., Pi 5).
+    if lb is None:
+        try:
+            from rpi_ws281x import PixelStrip
+            try:
+                s = PixelStrip(1, 18)
+                try:
+                    s.begin()
+                    pytest.fail("create_led_backend returned None even though rpi_ws281x initialized")
+                except RuntimeError as e:
+                    msg = str(e)
+                    if "Hardware revision is not supported" in msg or "ws2811_init failed" in msg:
+                        pytest.skip("LED backend library present but not supported on this hardware: " + msg)
+                    else:
+                        pytest.fail(f"LED backend import succeeded but initialization failed: {e}")
+            except Exception as e:
+                pytest.fail(f"LED backend import succeeded but construction failed: {e}")
+        except Exception:
+            pytest.fail("LED backend not available and rpi_ws281x not installed")
+
     # Basic smoke test: try to set a pixel if API exists
     try:
         if hasattr(lb, "setPixelColor"):
