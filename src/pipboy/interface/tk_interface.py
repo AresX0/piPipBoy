@@ -43,9 +43,12 @@ class TkInterface:
         # Create root early so tests can monkeypatch attributes
         self.root = tk.Tk()
         self.root.title("piPipBoy - DEV MODE")
-        self.canvas = tk.Canvas(self.root, width=480, height=320, bg="#001100")
+        # Increase canvas by 50% (720x480 instead of 480x320)
+        self.canvas = tk.Canvas(self.root, width=720, height=480, bg="#001100")
         self.canvas.pack()
         self.load_config()
+        # Place tabs/icons at the bottom by default (user preference)
+        self.tab_at_bottom = True
 
         # Determine fullscreen preference: explicit arg > config file
         ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
@@ -141,10 +144,17 @@ class TkInterface:
 
         self.canvas.config(bg=bg)
         self.canvas.delete("all")
-        self.draw_text(10, 10, "piPipBoy - DEV MODE", fg=fg)
-        # Draw a simple tab bar background to make click area obvious
+        # Title (green) per user's request
+        self.draw_text(10, 10, "PiPIPBOY", fg="#99ff66")
+
+        # Draw a tab bar background (top or bottom depending on config)
         try:
-            self.canvas.create_rectangle(0, 0, 480, 36, fill=bg, outline=bg)
+            w = self.canvas.winfo_width() or 720
+            h = self.canvas.winfo_height() or 480
+            if getattr(self, "tab_at_bottom", False):
+                self.canvas.create_rectangle(0, h - 36, w, h, fill=bg, outline=bg)
+            else:
+                self.canvas.create_rectangle(0, 0, w, 36, fill=bg, outline=bg)
         except Exception:
             pass
 
@@ -177,10 +187,23 @@ class TkInterface:
 
     # Touch / click handlers
     def _tab_index_at(self, x: int, y: int) -> int | None:
-        """Return tab index at given x,y or None if outside tab area."""
-        # Tab bar is at y ~ 10..36 and each slot is 60px wide starting at x=10
-        if not (0 <= y <= 36):
-            return None
+        """Return tab index at given x,y or None if outside tab area.
+
+        Supports tabs at the top (y in 0..36) or bottom (y in canvas_height-36..canvas_height).
+        """
+        try:
+            if getattr(self, "tab_at_bottom", False):
+                h = self.canvas.winfo_height() or 480
+                if not (h - 36 <= y <= h):
+                    return None
+            else:
+                if not (0 <= y <= 36):
+                    return None
+        except Exception:
+            # If we can't query canvas size, fall back to top behavior
+            if not (0 <= y <= 36):
+                return None
+
         idx = (x - 10) // 60
         if idx < 0:
             return None

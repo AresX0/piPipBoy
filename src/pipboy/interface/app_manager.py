@@ -68,10 +68,20 @@ class AppManager:
                 pass
 
     def render(self, ctx: Any) -> None:
-        # Draw tab bar
+        # Draw tab bar (top or bottom depending on ctx.tab_at_bottom)
         x = 10
-        y = 10
         fb_active = self._is_feedback_active()
+
+        # Determine y position based on context preference
+        try:
+            if hasattr(ctx, "tab_at_bottom") and ctx.tab_at_bottom and hasattr(ctx, "canvas"):
+                h = ctx.canvas.winfo_height() or 480
+                y = h - 30  # place icons slightly above the bottom edge
+            else:
+                y = 10
+        except Exception:
+            y = 10
+
         for i, app in enumerate(self.apps):
             label = getattr(app, "name", f"App{i}")[:8]
             if i == self.index:
