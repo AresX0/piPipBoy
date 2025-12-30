@@ -200,7 +200,9 @@ def attach_icon_support(ui: Any) -> None:
                                 # visually verify position/size on remote Pi screenshots
                                 try:
                                     import os
-                                    if os.environ.get('PIPBOY_ICON_DEBUG'):
+                                    from pathlib import Path
+                                    debug_on = os.environ.get('PIPBOY_ICON_DEBUG') or Path.home().joinpath('diagnostics','icon_debug_on').exists()
+                                    if debug_on:
                                         try:
                                             # small rectangle above anchor point (anchor='s')
                                             r = canvas.create_rectangle(x - size//2, y - size, x + size//2, y, outline='red', width=1)
