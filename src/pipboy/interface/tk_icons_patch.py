@@ -77,11 +77,12 @@ def attach_icon_support(ui: Any) -> None:
                 return None
 
         def _render_icon_bar():
-            # Draw icons across the bottom in 2 or 3 compact rows (12x12 per request).
+            # Distribute icons into 2 or 3 rows, evenly spaced per row, fixed 12x12 icons
             try:
                 canvas = getattr(ui, 'canvas', None)
                 if canvas is None:
                     return
+
                 # Resolve canvas size
                 try:
                     width = int(canvas.kwargs.get('width', 800))
@@ -97,32 +98,32 @@ def attach_icon_support(ui: Any) -> None:
                         height = int(canvas.master.winfo_height())
                     except Exception:
                         height = 600
+
                 names = list(ui._icons.keys())
                 if not names:
                     return
 
                 n = len(names)
-                # Desired fixed icon size
+                # Fixed icon size requested
                 size = 12
-                padding = 6  # horizontal padding between icon and slot
-                bottom_padding = 8
+                padding = 8
+                bottom_padding = 10
                 row_spacing = size + 8
 
-                # Choose number of rows (prefer 2, but use 3 for many icons)
+                # Prefer 2 rows unless too many icons; allow up to 3 rows
                 rows = 2 if n <= 8 else 3
-                # make sure icons will fit horizontally, else increase rows up to 3
-                from math import ceil
-                while rows <= 3:
-                    cols = ceil(n / rows)
-                    # compute gap between icon centers available
-                    total_space = max(0, width - 20)
-                    gap = total_space / (cols + 1)
-                    if gap >= (size + padding) or rows == 3:
-                        break
-                    rows += 1
 
-                cols = ceil(n / rows)
-                gap = max(1, int((max(0, width - 20)) / (cols + 1)))
+                # Distribute icons across rows as evenly as possible
+                base = n // rows
+                extra = n % rows
+                counts = [(base + (1 if i < extra else 0)) for i in range(rows)]
+
+                # If any row would have 0 items, reduce rows accordingly
+                while rows > 1 and counts[-1] == 0:
+                    rows -= 1
+                    base = n // rows
+                    extra = n % rows
+                    counts = [(base + (1 if i < extra else 0)) for i in range(rows)]
 
                 # Clear previous icon items
                 try:
@@ -134,43 +135,58 @@ def attach_icon_support(ui: Any) -> None:
                 except Exception:
                     pass
                 ui._icon_items = []
-
                 ui._tk_images = ui._tk_images or {}
 
-                # If available, bind canvas resize to re-render bar
+                # Layout each row centered horizontally with even spacing
+                index = 0
+                y0 = height - bottom_padding
+                for r in range(rows):
+                    count = counts[r]
+                    if count == 0:
+                        continue
+                    # gap between centers
+                    gap = width / (count + 1)
+                    # ensure minimal spacing
+                    min_gap = size + padding
+                    if gap < min_gap and rows < 3:
+                        # try more rows to reduce crowding
+                        rows = min(3, rows + 1)
+                        base = n // rows
+                        extra = n % rows
+                        counts = [(base + (1 if i < extra else 0)) for i in range(rows)]
+                        # restart layout
+                        index = 0
+                        y0 = height - bottom_padding
+                        continue
+
+                    # determine vertical position for this row (stack from bottom upwards)
+                    y = int(y0 - r * row_spacing)
+                    for c in range(count):
+                        name = names[index]
+                        index += 1
+                        x = int((c + 1) * gap)
+                        path = ui._icons.get(name)
+                        if path is None:
+                            continue
+                        key = (path, size)
+                        img = ui._tk_images.get(key)
+                        if img is None:
+                            img = _get_tk_image(path, size)
+                            if img is None:
+                                continue
+                            ui._tk_images[key] = img
+                        try:
+                            item = canvas.create_image(x, y, image=img, anchor='s')
+                            ui._icon_items.append(item)
+                        except Exception:
+                            pass
+
+                # Small summary for logs to aid debugging layout issues
                 try:
-                    if hasattr(canvas.master, 'bind'):
-                        def _re(e):
-                            try:
-                                ui._render_icon_bar()
-                            except Exception:
-                                pass
-                        canvas.master.bind('<Configure>', _re)
+                    print(f"Icon layout rows={rows} counts={counts} width={width} height={height}")
                 except Exception:
                     pass
 
-                # Layout icons into rows/cols
-                left_margin = 10
-                for idx, name in enumerate(names):
-                    row = idx // cols
-                    col = idx % cols
-                    x = int(left_margin + (col + 1) * gap)
-                    y = int(height - bottom_padding - row * row_spacing)
-                    path = ui._icons.get(name)
-                    if path is None:
-                        continue
-                    key = (path, size)
-                    img = ui._tk_images.get(key)
-                    if img is None:
-                        img = _get_tk_image(path, size)
-                        if img is None:
-                            continue
-                        ui._tk_images[key] = img
-                    try:
-                        item = canvas.create_image(x, y, image=img, anchor='s')
-                        ui._icon_items.append(item)
-                    except Exception:
-                        pass
             except Exception:
                 pass
 
