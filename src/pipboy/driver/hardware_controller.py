@@ -76,6 +76,10 @@ class HardwareController:
             except Exception as e:
                 logger.exception("Failed to instantiate fan PWM device: %s", e)
                 return False
+        # Safety: avoid turning fan fully off (0%) unless explicitly allowed by an env var.
+        if p == 0.0 and os.environ.get('PIPBOY_ALLOW_FAN_ZERO', '0') != '1':
+            logger.warning("Refusing to set fan to 0%% without PIPBOY_ALLOW_FAN_ZERO=1; keeping current state")
+            return False
         try:
             self._fan.value = p
             logger.info("Set fan speed to %.1f%%", p * 100)
