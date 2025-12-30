@@ -59,6 +59,12 @@ def test_click_selects_tab(monkeypatch, tmp_path):
 
     apps = [DummyApp('A'), DummyApp('B'), DummyApp('C')]
     tk = TkInterface(cfg, sensors={}, fullscreen=None)
+    # Attach icon support for tests so icon-loading code runs on assignment
+    try:
+        from pipboy.interface.tk_icons_patch import attach_icon_support
+        attach_icon_support(tk)
+    except Exception:
+        pass
     tk.app_manager = AppManager(apps)
 
     # Click near the first tab (x ~ 15)
@@ -84,6 +90,12 @@ def test_swipe_changes_app(monkeypatch, tmp_path):
 
     apps = [DummyApp('A'), DummyApp('B'), DummyApp('C')]
     tk = TkInterface(cfg, sensors={}, fullscreen=None)
+    # Attach icon support for tests so icon-loading code runs on assignment
+    try:
+        from pipboy.interface.tk_icons_patch import attach_icon_support
+        attach_icon_support(tk)
+    except Exception:
+        pass
     tk.app_manager = AppManager(apps)
 
     # Start in index 0

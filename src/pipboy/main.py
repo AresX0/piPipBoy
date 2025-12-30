@@ -147,7 +147,13 @@ def main(argv: list[str] | None = None):
             p = find_or_create_icon(name, [src_icons, repo_icons])
             print(f"Icon for {name}: {p}")
 
+        # Attach runtime icon support so the dev UI will use repository icons
         ui = TkInterface(CONFIG_PATH, sensors=sensors)
+        try:
+            from .interface.tk_icons_patch import attach_icon_support
+            attach_icon_support(ui)
+        except Exception:
+            pass
         ui.run()
     else:
         print(f"piPipBoy {__version__} — starting on Raspberry Pi hardware")
