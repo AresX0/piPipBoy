@@ -112,41 +112,8 @@ def main(argv: list[str] | None = None):
     else:
         print(f"piPipBoy {__version__} — starting on Raspberry Pi hardware")
         # Select and configure GPIO pin factory (prefer lgpio, else pigpio if pigpiod is available)
-        def choose_gpio_pin_factory():
-            """Choose a GPIOZERO pin factory.
-
-            Preference order: lgpio -> pigpio (only if pigpiod is connected) -> default.
-            This helper prints diagnostic messages for pigpio init failures to help
-            debug DMA/mmap issues on newer Pi models.
-            """
-            try:
-                import lgpio  # type: ignore
-                os.environ.setdefault('GPIOZERO_PIN_FACTORY', 'lgpio')
-                print("Using lgpio for gpiozero pin factory")
-                return
-            except Exception:
-                # lgpio not available; continue to pigpio probe
-                pass
-
-            try:
-                import pigpio  # type: ignore
-                print("pigpio module found; attempting to connect to pigpiod")
-                try:
-                    pi_instance = pigpio.pi()
-                    if getattr(pi_instance, "connected", False):
-                        os.environ.setdefault('GPIOZERO_PIN_FACTORY', 'pigpio')
-                        print("Using pigpio for gpiozero pin factory (pigpiod connected)")
-                    else:
-                        print("pigpio present but pigpiod not connected; skipping pigpio pin factory")
-                except Exception as e:
-                    # Helpful message for pigpiod init errors (e.g., DMA mmap failures on Pi 5)
-                    print("pigpio found but pigpiod failed to initialize:", e)
-            except Exception:
-                # No pigpio available; leave default factory
-                pass
-
-        # Choose pin factory before importing hardware interfaces
         choose_gpio_pin_factory()
+        # Choose pin factory before importing hardware interfaces
         # Import real hardware interfaces and wire them to an AppManager
         try:
             from .interface.ili9486_display import ILI9486Display
