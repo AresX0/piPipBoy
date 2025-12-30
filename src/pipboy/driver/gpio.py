@@ -11,11 +11,56 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Try to use lgpio (recommended on Bookworm), otherwise fallback
+# Try to use lgpio (recommended on Bookworm), otherwise fall back to pigpio or gpiozero
+import os
+
 try:
     import lgpio
 except Exception:  # pragma: no cover - optional
     lgpio = None
+
+# Prefer lgpio when available, else try pigpio (daemon) and fall back to gpiozero default
+def _choose_pin_factory() -> None:
+    try:
+        if lgpio is not None:
+            os.environ.setdefault("GPIOZERO_PIN_FACTORY", "lgpio")
+            logger.debug("Using lgpio for gpiozero pin factory")
+            return
+    except Exception:
+        pass
+
+    try:
+        # pigpio Python library check (requires pigpiod running)
+        import pigpio
+
+        try:
+            p = pigpio.pi()
+            # pigpio.pi() returns an object with connected attribute (1 if connected)
+            connected = getattr(p, "connected", None)
+            if connected:
+                os.environ.setdefault("GPIOZERO_PIN_FACTORY", "pigpio")
+                logger.debug("Using pigpio pin factory (pigpiod connected)")
+                try:
+                    p.stop()
+                except Exception:
+                    pass
+                return
+            else:
+                try:
+                    p.stop()
+                except Exception:
+                    pass
+        except Exception as e:
+            logger.debug("pigpio import or connect failed: %s", e)
+    except Exception:
+        # pigpio not installed
+        pass
+
+    # No special factory selected; use default gpiozero factory
+    logger.debug("No special gpio pin factory selected; using default gpiozero factory")
+
+# Run selection at import time
+_choose_pin_factory()
 
 try:
     from gpiozero import Button, PWMOutputDevice
