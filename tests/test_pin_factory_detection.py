@@ -32,6 +32,19 @@ def test_prefers_lgpio(monkeypatch):
 def test_pigpio_connected(monkeypatch):
     # Ensure lgpio absent and pigpio present with connected=True
     sys.modules.pop('lgpio', None)
+
+    # Ensure import of lgpio fails so we exercise pigpio code even if lgpio is
+    # installed on the test runner (e.g., on the Pi).
+    import builtins
+    orig_import = builtins.__import__
+
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if name == 'lgpio':
+            raise ImportError()
+        return orig_import(name, globals, locals, fromlist, level)
+
+    builtins.__import__ = fake_import
+
     class MockPi:
         connected = True
 
@@ -40,12 +53,28 @@ def test_pigpio_connected(monkeypatch):
     sys.modules['pigpio'] = mod
 
     _clear_env()
-    main.choose_gpio_pin_factory(force=True)
+    try:
+        main.choose_gpio_pin_factory(force=True)
+    finally:
+        builtins.__import__ = orig_import
+
     assert os.environ.get('GPIOZERO_PIN_FACTORY') == 'pigpio'
 
 
 def test_pigpio_not_connected(monkeypatch):
     sys.modules.pop('lgpio', None)
+
+    # Ensure import of lgpio fails so we exercise pigpio code even if lgpio is
+    # installed on the test runner (e.g., on the Pi).
+    import builtins
+    orig_import = builtins.__import__
+
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if name == 'lgpio':
+            raise ImportError()
+        return orig_import(name, globals, locals, fromlist, level)
+
+    builtins.__import__ = fake_import
 
     class MockPi:
         connected = False
@@ -55,12 +84,28 @@ def test_pigpio_not_connected(monkeypatch):
     sys.modules['pigpio'] = mod
 
     _clear_env()
-    main.choose_gpio_pin_factory(force=True)
+    try:
+        main.choose_gpio_pin_factory(force=True)
+    finally:
+        builtins.__import__ = orig_import
+
     assert os.environ.get('GPIOZERO_PIN_FACTORY') is None
 
 
 def test_pigpio_init_failure_logs(monkeypatch, capsys):
     sys.modules.pop('lgpio', None)
+
+    # Ensure import of lgpio fails so we exercise pigpio code even if lgpio is
+    # installed on the test runner (e.g., on the Pi).
+    import builtins
+    orig_import = builtins.__import__
+
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        if name == 'lgpio':
+            raise ImportError()
+        return orig_import(name, globals, locals, fromlist, level)
+
+    builtins.__import__ = fake_import
 
     def bad_pi():
         raise RuntimeError("mmap dma failed")
@@ -70,6 +115,10 @@ def test_pigpio_init_failure_logs(monkeypatch, capsys):
     sys.modules['pigpio'] = mod
 
     _clear_env()
-    main.choose_gpio_pin_factory(force=True)
+    try:
+        main.choose_gpio_pin_factory(force=True)
+    finally:
+        builtins.__import__ = orig_import
+
     captured = capsys.readouterr()
     assert "failed to initialize" in captured.out or "mmap" in captured.out
