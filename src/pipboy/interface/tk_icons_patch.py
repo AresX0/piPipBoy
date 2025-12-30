@@ -192,13 +192,35 @@ def attach_icon_support(ui: Any) -> None:
 
         ui._render_icon_bar = _render_icon_bar
 
-        # If we have access to a Tk 'after', schedule a delayed re-render to catch
-        # layout finalization (canvas size might not be set at attach time).
+        # Schedule re-render attempts until icons are actually placed on canvas
         try:
             canvas = getattr(ui, 'canvas', None)
             if canvas is not None and hasattr(canvas.master, 'after'):
+                def _attempt_render(attempts=[0]):
+                    try:
+                        ui._render_icon_bar()
+                        attempts[0] += 1
+                        # If items placed, print success and stop retrying
+                        if getattr(ui, '_icon_items', None) and len(ui._icon_items) >= len(ui._icons):
+                            try:
+                                print(f"Icon render succeeded after {attempts[0]} attempts")
+                            except Exception:
+                                pass
+                            return
+                        if attempts[0] < 20:
+                            try:
+                                canvas.master.after(250, _attempt_render)
+                            except Exception:
+                                pass
+                    except Exception:
+                        # schedule again in case layout wasn't ready
+                        try:
+                            if attempts[0] < 20:
+                                canvas.master.after(250, _attempt_render)
+                        except Exception:
+                            pass
                 try:
-                    canvas.master.after(500, ui._render_icon_bar)
+                    canvas.master.after(250, _attempt_render)
                 except Exception:
                     pass
         except Exception:
