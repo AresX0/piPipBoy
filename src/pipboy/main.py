@@ -26,13 +26,16 @@ DEFAULT_CONFIG = {
 }
 
 
-def choose_gpio_pin_factory(force: bool = False):
+def choose_gpio_pin_factory(force: bool = False, prefer: str | None = None):
     """Choose a GPIOZERO pin factory.
 
     Preference order: lgpio -> pigpio (only if pigpiod is connected) -> default.
     When running under pytest we avoid mutating the environment unless `force=True` is
     passed — this prevents tests from accidentally claiming real GPIO hardware during
     the unit test process.
+
+    For easier testing, `prefer` may be set to 'lgpio' or 'pigpio' to force that
+    path without relying on import-time side effects.
     """
     # If running under pytest and not forced, skip automatic selection to avoid
     # claiming hardware pins used by other processes or test fixtures.
@@ -40,6 +43,33 @@ def choose_gpio_pin_factory(force: bool = False):
         print("Running under pytest; skipping automatic pin-factory selection (use force=True to override)")
         return
 
+    # If caller explicitly requested a path, try that first
+    if prefer == 'lgpio':
+        try:
+            import lgpio  # type: ignore
+            os.environ.setdefault('GPIOZERO_PIN_FACTORY', 'lgpio')
+            print("Using lgpio for gpiozero pin factory (forced)")
+            return
+        except Exception:
+            print("Forced lgpio selection failed: lgpio import error")
+    elif prefer == 'pigpio':
+        try:
+            import pigpio  # type: ignore
+            print("pigpio module found; attempting to connect to pigpiod (forced)")
+            try:
+                pi_instance = pigpio.pi()
+                if getattr(pi_instance, "connected", False):
+                    os.environ.setdefault('GPIOZERO_PIN_FACTORY', 'pigpio')
+                    print("Using pigpio for gpiozero pin factory (pigpiod connected, forced)")
+                    return
+                else:
+                    print("pigpio present but pigpiod not connected; forced pigpio selection skipped")
+            except Exception as e:
+                print("pigpio found but pigpiod failed to initialize (forced):", e)
+        except Exception:
+            print("Forced pigpio selection failed: pigpio import error")
+
+    # Default behavior: prefer lgpio when available
     try:
         import lgpio  # type: ignore
         os.environ.setdefault('GPIOZERO_PIN_FACTORY', 'lgpio')

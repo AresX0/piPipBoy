@@ -59,7 +59,7 @@ def test_pigpio_connected(monkeypatch):
 
     _clear_env()
     try:
-        main.choose_gpio_pin_factory(force=True)
+        main.choose_gpio_pin_factory(force=True, prefer='pigpio')
     finally:
         builtins.__import__ = orig_import
 
@@ -93,7 +93,7 @@ def test_pigpio_not_connected(monkeypatch):
 
     _clear_env()
     try:
-        main.choose_gpio_pin_factory(force=True)
+        main.choose_gpio_pin_factory(force=True, prefer='pigpio')
     finally:
         builtins.__import__ = orig_import
 
@@ -125,7 +125,7 @@ def test_pigpio_init_failure_logs(monkeypatch, capsys):
 
     _clear_env()
     try:
-        main.choose_gpio_pin_factory(force=True)
+        main.choose_gpio_pin_factory(force=True, prefer='pigpio')
     finally:
         builtins.__import__ = orig_import
 
