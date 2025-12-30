@@ -105,8 +105,8 @@ def attach_icon_support(ui: Any) -> None:
                     return
 
                 n = len(names)
-                # Fixed icon size requested
-                size = 12
+                # Icon size (allow override via ui.icon_size)
+                size = getattr(ui, 'icon_size', 12)
                 padding = 8
                 bottom_padding = 10
                 row_spacing = size + 8
@@ -289,6 +289,35 @@ def attach_icon_support(ui: Any) -> None:
         # Print a small summary for logs
         try:
             print("Loaded icons:", {k: v for k, v in ui._icons.items()})
+            # Schedule short-lived periodic raises so icons remain on top after they are placed
+            try:
+                def _raise_once():
+                    try:
+                        if getattr(ui, '_icon_items', None):
+                            for it in ui._icon_items:
+                                try:
+                                    canvas.tag_raise(it)
+                                except Exception:
+                                    pass
+                    except Exception:
+                        pass
+                def _schedule_raise(count=[0]):
+                    try:
+                        _raise_once()
+                    except Exception:
+                        pass
+                    count[0] += 1
+                    if count[0] < 30:
+                        try:
+                            canvas.master.after(1000, _schedule_raise)
+                        except Exception:
+                            pass
+                try:
+                    canvas.master.after(1000, _schedule_raise)
+                except Exception:
+                    pass
+            except Exception:
+                pass
         except Exception:
             pass
 
