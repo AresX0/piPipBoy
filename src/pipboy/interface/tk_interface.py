@@ -89,6 +89,7 @@ class TkInterface:
         from pipboy.app.radio import RadioApp
         from pipboy.app.update import UpdateApp
         from pipboy.app.debug import DebugApp
+        from pipboy.app.settings import SettingsApp
         from .app_manager import AppManager
 
         theme = self.config.get("themes", {}).get(self.config.get("theme", "green"), {})
@@ -102,6 +103,7 @@ class TkInterface:
             RadioApp(),
             UpdateApp(),
             DebugApp(),
+            SettingsApp(),
         ], feedback_color=fb_color, feedback_duration=fb_duration)
 
     def load_config(self) -> None:

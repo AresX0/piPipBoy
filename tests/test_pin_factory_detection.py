@@ -18,6 +18,20 @@ def _clear_env():
     os.environ.pop('GPIOZERO_PIN_FACTORY', None)
 
 
+def lgpio_present():
+    """Return True if lgpio appears available on this runner.
+
+    importlib.util.find_spec('lgpio') can raise ValueError when the already-
+    imported module has a __spec__ of None (observed on some Pi setups), so
+    catch that and fall back to checking sys.modules.
+    """
+    import importlib, sys
+    try:
+        return importlib.util.find_spec('lgpio') is not None
+    except ValueError:
+        return 'lgpio' in sys.modules
+
+
 def test_prefers_lgpio(monkeypatch):
     # Simulate lgpio present
     for m in list(sys.modules.keys()):
@@ -34,8 +48,7 @@ def test_prefers_lgpio(monkeypatch):
 def test_pigpio_connected(monkeypatch):
     # If lgpio is present on the runner, tests that assert pigpio selection
     # are unreliable; skip under that condition.
-    import importlib
-    if importlib.util.find_spec('lgpio') is not None:
+    if lgpio_present():
         import pytest
         pytest.skip("lgpio present on runner; skipping pigpio-specific test")
 
@@ -74,8 +87,7 @@ def test_pigpio_connected(monkeypatch):
 
 
 def test_pigpio_not_connected(monkeypatch):
-    import importlib
-    if importlib.util.find_spec('lgpio') is not None:
+    if lgpio_present():
         import pytest
         pytest.skip("lgpio present on runner; skipping pigpio-specific test")
 
@@ -113,8 +125,7 @@ def test_pigpio_not_connected(monkeypatch):
 
 
 def test_pigpio_init_failure_logs(monkeypatch, capsys):
-    import importlib
-    if importlib.util.find_spec('lgpio') is not None:
+    if lgpio_present():
         import pytest
         pytest.skip("lgpio present on runner; skipping pigpio-specific test")
 

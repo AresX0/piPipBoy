@@ -1,0 +1,16 @@
+At line:1 char:162
++ ... 0failed%20%28Invalid%20argument%29%20on%20Raspberry%20Pi%205&body=Obs ...
++                                                                 ~
+The ampersand (&) character is not allowed. The & operator is reserved for future use; wrap an 
+ampersand in double quotation marks ("&") to pass it as part of a string.
+At line:1 char:676
++ ... pigpiod.strace%20and%20%2Ftmp%2Fpigpiod.err%20on%20the%20Pi).%20Test% ...
++                                                                  ~
+Missing property name after reference operator.
+At line:1 char:957
++ ... u%3Doff%60%20kernel%20boot%20param%20in%20a%20test%20reboot).%0A2.%20 ...
++                                                                  ~
+Missing property name after reference operator.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : AmpersandNotAllowed
+ 
