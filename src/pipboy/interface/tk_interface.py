@@ -101,23 +101,23 @@ class TkInterface:
         from pipboy.app.update import UpdateApp
         from pipboy.app.debug import DebugApp
         from pipboy.app.settings import SettingsApp
+        from pipboy.app.exit_app import ExitApp
         from .app_manager import AppManager
 
         theme = self.config.get("themes", {}).get(self.config.get("theme", "green"), {})
         fb_color = theme.get("feedback_fg", "#ffff66")
         fb_duration = theme.get("feedback_duration", 0.5)
-from pipboy.app.exit_app import ExitApp
 
-            self.app_manager = AppManager([
-                FileManagerApp(),
-                MapApp(),
-                EnvironmentApp(sensors=self.sensors),
-                ClockApp(),
-                RadioApp(),
-                UpdateApp(),
-                DebugApp(),
-                SettingsApp(),
-                ExitApp(),
+        self.app_manager = AppManager([
+            FileManagerApp(),
+            MapApp(),
+            EnvironmentApp(sensors=self.sensors),
+            ClockApp(),
+            RadioApp(),
+            UpdateApp(),
+            DebugApp(),
+            SettingsApp(),
+            ExitApp(),
         ], feedback_color=fb_color, feedback_duration=fb_duration)
 
     def load_config(self) -> None:
