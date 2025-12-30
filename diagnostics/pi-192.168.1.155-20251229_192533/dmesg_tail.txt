@@ -1,0 +1,200 @@
+[    1.442265]  mmcblk0: p1 p2
+[    1.442332] mmcblk0: mmc0:544c USD00 117 GiB (quirks 0x40000000)
+[    1.476748] drm-rp1-dsi 1f00118000.dsi: [drm] rp1dsi: Command time (outvact): 33
+[    1.477091] drm-rp1-dsi 1f00118000.dsi: [drm] rp1dsi: Nominal Byte clock 90000000 DPI clock 30000000 (parent rate 90000000)
+[    1.540761] hid-generic 0003:27A7:2502.0001: input,hidraw0: USB HID v1.00 Keyboard [Beken Wireless Dongle] on usb-xhci-hcd.1-2/input0
+[    1.544545] hid-generic 0003:27A7:2502.0002: No inputs registered, leaving
+[    1.544578] hid-generic 0003:27A7:2502.0002: hidraw1: USB HID v1.00 Device [Beken Wireless Dongle] on usb-xhci-hcd.1-2/input1
+[    1.562411] input: Beken Wireless Dongle as /devices/platform/axi/1000120000.pcie/1f00300000.usb/xhci-hcd.1/usb3/3-2/3-2:1.2/0003:27A7:2502.0003/input/input7
+[    1.562466] hid-generic 0003:27A7:2502.0003: input,hidraw2: USB HID v1.00 Mouse [Beken Wireless Dongle] on usb-xhci-hcd.1-2/input2
+[    1.836996] Console: switching to colour frame buffer device 100x30
+[    1.861181] drm-rp1-dsi 1f00118000.dsi: [drm] fb0: drm-rp1-dsidrmf frame buffer device
+[    1.861247] vc4-drm axi:gpu: [drm] fb1: vc4drmfb frame buffer device
+[    1.884681] drm-rp1-dsi 1f00118000.dsi: rp1dsi_bind succeeded
+[    2.210649] EXT4-fs (nvme0n1p2): orphan cleanup on readonly fs
+[    2.211151] EXT4-fs (nvme0n1p2): mounted filesystem d6944274-f2f7-4644-96a4-213c3b367f5c ro with ordered data mode. Quota mode: none.
+[    2.334048] NET: Registered PF_INET6 protocol family
+[    2.334348] Segment Routing with IPv6
+[    2.334356] In-situ OAM (IOAM) with IPv6
+[    2.348288] systemd[1]: systemd 257.9-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+[    2.348296] systemd[1]: Detected architecture arm64.
+[    2.349335] systemd[1]: Hostname set to <starbug>.
+[    2.412770] systemd[1]: bpf-restrict-fs: BPF LSM hook not enabled in the kernel, BPF LSM not supported.
+[    2.412895] systemd[1]: Using hardware watchdog 'Broadcom BCM2835 Watchdog timer', version 0, device /dev/watchdog0
+[    2.412904] systemd[1]: Watchdog running with a hardware timeout of 1min.
+[    2.442265] zram_generator::config[274]: zram0: system has too much memory (8058MB), limit is 0MB, ignoring.
+[    2.672587] systemd[1]: Queued start job for default target graphical.target.
+[    2.693677] systemd[1]: Created slice system-getty.slice - Slice /system/getty.
+[    2.693984] systemd[1]: Created slice system-modprobe.slice - Slice /system/modprobe.
+[    2.694203] systemd[1]: Created slice system-rpi\x2dsetup\x2dloop.slice - Slice /system/rpi-setup-loop.
+[    2.694412] systemd[1]: Created slice system-serial\x2dgetty.slice - Slice /system/serial-getty.
+[    2.694625] systemd[1]: Created slice system-systemd\x2dfsck.slice - Slice /system/systemd-fsck.
+[    2.694835] systemd[1]: Created slice system-systemd\x2dzram\x2dsetup.slice - Slice /system/systemd-zram-setup.
+[    2.694943] systemd[1]: Created slice user.slice - User and Session Slice.
+[    2.694998] systemd[1]: Started systemd-ask-password-wall.path - Forward Password Requests to Wall Directory Watch.
+[    2.695159] systemd[1]: Set up automount proc-sys-fs-binfmt_misc.automount - Arbitrary Executable File Formats File System Automount Point.
+[    2.695181] systemd[1]: Expecting device dev-disk-by\x2dpartuuid-dfdf1b74\x2d01.device - /dev/disk/by-partuuid/dfdf1b74-01...
+[    2.695188] systemd[1]: Expecting device dev-dri-card0.device - /dev/dri/card0...
+[    2.695196] systemd[1]: Expecting device dev-dri-renderD128.device - /dev/dri/renderD128...
+[    2.695203] systemd[1]: Expecting device dev-ttyAMA10.device - /dev/ttyAMA10...
+[    2.695208] systemd[1]: Expecting device dev-zram0.device - /dev/zram0...
+[    2.695248] systemd[1]: Reached target nss-user-lookup.target - User and Group Name Lookups.
+[    2.695275] systemd[1]: Reached target slices.target - Slice Units.
+[    2.697861] systemd[1]: Listening on rpcbind.socket - RPCbind Server Activation Socket.
+[    2.698805] systemd[1]: Listening on systemd-creds.socket - Credential Encryption/Decryption.
+[    2.698887] systemd[1]: Listening on systemd-initctl.socket - initctl Compatibility Named Pipe.
+[    2.698954] systemd[1]: Listening on systemd-journald-dev-log.socket - Journal Socket (/dev/log).
+[    2.699038] systemd[1]: Listening on systemd-journald.socket - Journal Sockets.
+[    2.699071] systemd[1]: systemd-pcrextend.socket - TPM PCR Measurements was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+[    2.699084] systemd[1]: systemd-pcrlock.socket - Make TPM PCR Policy was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+[    2.699144] systemd[1]: Listening on systemd-udevd-control.socket - udev Control Socket.
+[    2.699185] systemd[1]: Listening on systemd-udevd-kernel.socket - udev Kernel Socket.
+[    2.699295] systemd[1]: dev-hugepages.mount - Huge Pages File System was skipped because of an unmet condition check (ConditionPathExists=/sys/kernel/mm/hugepages).
+[    2.700423] systemd[1]: Mounting dev-mqueue.mount - POSIX Message Queue File System...
+[    2.701185] systemd[1]: Mounting run-lock.mount - Legacy Locks Directory /run/lock...
+[    2.702289] systemd[1]: Mounting sys-kernel-debug.mount - Kernel Debug File System...
+[    2.704959] systemd[1]: Mounting sys-kernel-tracing.mount - Kernel Trace File System...
+[    2.705065] systemd[1]: auth-rpcgss-module.service - Kernel Module supporting RPCSEC_GSS was skipped because of an unmet condition check (ConditionPathExists=/etc/krb5.keytab).
+[    2.709009] systemd[1]: Starting keyboard-setup.service - Set the console keyboard layout...
+[    2.713373] systemd[1]: Starting kmod-static-nodes.service - Create List of Static Device Nodes...
+[    2.714780] systemd[1]: Starting modprobe@configfs.service - Load Kernel Module configfs...
+[    2.717016] systemd[1]: Starting modprobe@drm.service - Load Kernel Module drm...
+[    2.720469] systemd[1]: Starting modprobe@efi_pstore.service - Load Kernel Module efi_pstore...
+[    2.724072] systemd[1]: Starting modprobe@fuse.service - Load Kernel Module fuse...
+[    2.724268] systemd[1]: systemd-fsck-root.service - File System Check on Root Device was skipped because of an unmet condition check (ConditionPathExists=!/run/initramfs/fsck-root).
+[    2.724329] systemd[1]: systemd-hibernate-clear.service - Clear Stale Hibernate Storage Info was skipped because of an unmet condition check (ConditionPathExists=/sys/firmware/efi/efivars/HibernateLocation-8cf2644b-4b0b-428f-9387-6d876050dc67).
+[    2.726740] systemd[1]: Starting systemd-journald.service - Journal Service...
+[    2.730710] systemd[1]: Starting systemd-modules-load.service - Load Kernel Modules...
+[    2.730775] systemd[1]: systemd-pcrmachine.service - TPM PCR Machine ID Measurement was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+[    2.733543] systemd[1]: Starting systemd-remount-fs.service - Remount Root and Kernel File Systems...
+[    2.733653] systemd[1]: systemd-tpm2-setup-early.service - Early TPM SRK Setup was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+[    2.738082] systemd[1]: Starting systemd-udev-load-credentials.service - Load udev Rules from Credentials...
+[    2.753554] fuse: init (API version 7.41)
+[    2.754977] systemd[1]: Starting systemd-udev-trigger.service - Coldplug All udev Devices...
+[    2.766720] systemd-journald[351]: Collecting audit messages is disabled.
+[    2.768635] systemd[1]: Mounted dev-mqueue.mount - POSIX Message Queue File System.
+[    2.768840] systemd[1]: Mounted run-lock.mount - Legacy Locks Directory /run/lock.
+[    2.768919] systemd[1]: Mounted sys-kernel-debug.mount - Kernel Debug File System.
+[    2.768981] systemd[1]: Mounted sys-kernel-tracing.mount - Kernel Trace File System.
+[    2.769169] systemd[1]: Finished kmod-static-nodes.service - Create List of Static Device Nodes.
+[    2.769402] systemd[1]: modprobe@configfs.service: Deactivated successfully.
+[    2.769500] systemd[1]: Finished modprobe@configfs.service - Load Kernel Module configfs.
+[    2.769692] systemd[1]: modprobe@drm.service: Deactivated successfully.
+[    2.769777] systemd[1]: Finished modprobe@drm.service - Load Kernel Module drm.
+[    2.769955] systemd[1]: modprobe@efi_pstore.service: Deactivated successfully.
+[    2.770060] systemd[1]: Finished modprobe@efi_pstore.service - Load Kernel Module efi_pstore.
+[    2.770252] systemd[1]: modprobe@fuse.service: Deactivated successfully.
+[    2.770337] systemd[1]: Finished modprobe@fuse.service - Load Kernel Module fuse.
+[    2.772890] zram: Added device: zram0
+[    2.774211] systemd[1]: Mounting sys-fs-fuse-connections.mount - FUSE Control File System...
+[    2.774945] i2c_dev: i2c /dev entries driver
+[    2.781442] systemd[1]: Mounting sys-kernel-config.mount - Kernel Configuration File System...
+[    2.792904] systemd[1]: Starting systemd-tmpfiles-setup-dev-early.service - Create Static Device Nodes in /dev gracefully...
+[    2.793685] systemd[1]: Finished systemd-modules-load.service - Load Kernel Modules.
+[    2.796933] systemd[1]: Finished systemd-udev-load-credentials.service - Load udev Rules from Credentials.
+[    2.797541] systemd[1]: Mounted sys-fs-fuse-connections.mount - FUSE Control File System.
+[    2.801214] systemd[1]: Starting systemd-sysctl.service - Apply Kernel Variables...
+[    2.801808] systemd[1]: Started systemd-journald.service - Journal Service.
+[    2.810165] EXT4-fs (nvme0n1p2): re-mounted d6944274-f2f7-4644-96a4-213c3b367f5c r/w.
+[    2.847894] systemd-journald[351]: Received client request to flush runtime journal.
+[    2.977043] loop0: detected capacity change from 0 to 4194304
+[    3.057793] zram: setup backing device /dev/disk/by-backingfile/var-swap
+[    3.110795] zram0: detected capacity change from 0 to 4194304
+[    3.182439] Adding 2097136k swap on /dev/zram0.  Priority:100 extents:1 across:2097136k SS
+[    3.299482] rpi-gpiomem 107d508500.gpiomem: window base 0x107d508500 size 0x00000040
+[    3.313633] rpi-gpiomem 107d508500.gpiomem: initialised 1 regions as /dev/gpiomem1
+[    3.318580] mc: Linux media interface: v0.10
+[    3.336272] rpi-gpiomem 107d517c00.gpiomem: window base 0x107d517c00 size 0x00000040
+[    3.336384] rpi-gpiomem 107d517c00.gpiomem: initialised 1 regions as /dev/gpiomem2
+[    3.336428] rpi-gpiomem 107d504100.gpiomem: window base 0x107d504100 size 0x00000020
+[    3.336595] rpi-gpiomem 107d504100.gpiomem: initialised 1 regions as /dev/gpiomem3
+[    3.337096] rpi-gpiomem 107d510700.gpiomem: window base 0x107d510700 size 0x00000020
+[    3.339273] rpi-gpiomem 107d510700.gpiomem: initialised 1 regions as /dev/gpiomem4
+[    3.350900] rpi-gpiomem 1f000d0000.gpiomem: window base 0x1f000d0000 size 0x00030000
+[    3.366641] rpi-gpiomem 1f000d0000.gpiomem: initialised 1 regions as /dev/gpiomem0
+[    3.447680] videodev: Linux video capture interface: v2.00
+[    3.468479] edt_ft5x06 10-0038: supply iovcc not found, using dummy regulator
+[    3.809849] input: 10-0038 generic ft5x06 (79) as /devices/platform/axi/1000120000.pcie/1f00088000.i2c/i2c-10/10-0038/input/input8
+[    3.849536] rp1-cfe 1f00128000.csi: bcm2712_iommu_of_xlate: MMU 1000005280.iommu
+[    3.849545] rp1-cfe 1f00128000.csi: bcm2712_iommu_probe_device: MMU 1000005280.iommu
+[    3.849552] rp1-cfe 1f00128000.csi: bcm2712_iommu_device_group: MMU 1000005280.iommu
+[    3.849558] rp1-cfe 1f00128000.csi: Adding to iommu group 2
+[    3.849561] rp1-cfe 1f00128000.csi: bcm2712_iommu_attach_dev: MMU 1000005280.iommu
+[    3.852994] rp1-cfe 1f00128000.csi: DW dphy Host HW v1.20
+[    3.853022] rp1-cfe 1f00128000.csi: PiSP FE HW v0.1
+[    3.855603] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[    3.856508] pispbe 1000880000.pisp_be: bcm2712_iommu_of_xlate: MMU 1000005100.iommu
+[    3.856525] pispbe 1000880000.pisp_be: bcm2712_iommu_probe_device: MMU 1000005100.iommu
+[    3.856544] pispbe 1000880000.pisp_be: bcm2712_iommu_device_group: MMU 1000005100.iommu
+[    3.856554] pispbe 1000880000.pisp_be: Adding to iommu group 0
+[    3.856564] pispbe 1000880000.pisp_be: bcm2712_iommu_attach_dev: MMU 1000005100.iommu
+[    3.864171] Bluetooth: Core ver 2.22
+[    3.864216] NET: Registered PF_BLUETOOTH protocol family
+[    3.864219] Bluetooth: HCI device and connection manager initialized
+[    3.864228] Bluetooth: HCI socket layer initialized
+[    3.864234] Bluetooth: L2CAP socket layer initialized
+[    3.864240] Bluetooth: SCO socket layer initialized
+[    3.864625] Loaded X.509 cert 'benh@debian.org: 577e021cb980e0e820821ba7b54b4961b8b4fadf'
+[    3.865807] rp1-cfe 1f00128000.csi: found subdevice /axi/pcie@1000120000/rp1/i2c@80000/ov5647@36
+[    3.867007] Loaded X.509 cert 'romain.perier@gmail.com: 3abbc6ec146e09d1b6016ab9d6cf71dd233f0328'
+[    3.867215] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    3.867401] Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+[    3.880252] rpi-hevc-dec 1000800000.codec: bcm2712_iommu_of_xlate: MMU 1000005100.iommu
+[    3.880261] rpi-hevc-dec 1000800000.codec: bcm2712_iommu_probe_device: MMU 1000005100.iommu
+[    3.880268] rpi-hevc-dec 1000800000.codec: bcm2712_iommu_device_group: MMU 1000005100.iommu
+[    3.880273] rpi-hevc-dec 1000800000.codec: Adding to iommu group 0
+[    3.880277] rpi-hevc-dec 1000800000.codec: bcm2712_iommu_attach_dev: MMU 1000005100.iommu
+[    3.905084] rp1-cfe 1f00128000.csi: Using sensor ov5647 11-0036 for capture
+[    3.910659] rp1-cfe 1f00128000.csi: Registered [rp1-cfe-csi2_ch0] node id 0 successfully as /dev/video0
+[    3.917452] Bluetooth: HCI UART driver ver 2.3
+[    3.917460] Bluetooth: HCI UART protocol H4 registered
+[    3.917485] Bluetooth: HCI UART protocol Three-wire (H5) registered
+[    3.917604] hci_uart_bcm serial0-0: supply vbat not found, using dummy regulator
+[    3.917644] hci_uart_bcm serial0-0: supply vddio not found, using dummy regulator
+[    3.917666] Bluetooth: HCI UART protocol Broadcom registered
+[    3.924819] rp1-cfe 1f00128000.csi: Registered [rp1-cfe-embedded] node id 1 successfully as /dev/video1
+[    3.930971] brcmfmac: F1 signature read @0x18000000=0x15264345
+[    3.935447] brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac43455-sdio for chip BCM4345/6
+[    3.935606] usbcore: registered new interface driver brcmfmac
+[    3.936624] rp1-cfe 1f00128000.csi: Registered [rp1-cfe-csi2_ch2] node id 2 successfully as /dev/video2
+[    3.936664] rpi-hevc-dec 1000800000.codec: Device registered as /dev/video19
+[    3.936722] rp1-cfe 1f00128000.csi: Registered [rp1-cfe-csi2_ch3] node id 3 successfully as /dev/video3
+[    3.936921] rp1-cfe 1f00128000.csi: Registered [rp1-cfe-fe_image0] node id 4 successfully as /dev/video4
+[    3.936971] rp1-cfe 1f00128000.csi: Registered [rp1-cfe-fe_image1] node id 5 successfully as /dev/video5
+[    3.937030] rp1-cfe 1f00128000.csi: Registered [rp1-cfe-fe_stats] node id 6 successfully as /dev/video6
+[    3.948571] rp1-cfe 1f00128000.csi: Registered [rp1-cfe-fe_config] node id 7 successfully as /dev/video7
+[    4.164258] brcmfmac: brcmf_c_process_txcap_blob: no txcap_blob available (err=-2)
+[    4.164524] brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4345/6 wl0: Aug 29 2023 01:47:08 version 7.45.265 (28bca26 CY) FWID 01-b677b91b
+[    4.273093] Bluetooth: hci0: BCM: chip id 107
+[    4.273293] Bluetooth: hci0: BCM: features 0x2f
+[    4.274346] Bluetooth: hci0: BCM4345C0
+[    4.274348] Bluetooth: hci0: BCM4345C0 (003.001.025) build 0000
+[    4.274882] Bluetooth: hci0: BCM4345C0 'brcm/BCM4345C0.raspberrypi,5-model-b.hcd' Patch
+[    4.878317] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[    4.878325] Bluetooth: BNEP filters: protocol multicast
+[    4.878332] Bluetooth: BNEP socket layer initialized
+[    4.939509] Bluetooth: hci0: BCM: features 0x2f
+[    4.942324] Bluetooth: hci0: BCM43455 37.4MHz Raspberry Pi 3+-0190
+[    4.942337] Bluetooth: hci0: BCM4345C0 (003.001.025) build 0382
+[    4.948743] Bluetooth: hci0: BCM: Using default device address (43:45:c0:00:1f:ac)
+[    4.980244] Bluetooth: MGMT ver 1.23
+[    4.988109] NET: Registered PF_ALG protocol family
+[    5.036816] Bluetooth: RFCOMM TTY layer initialized
+[    5.036836] Bluetooth: RFCOMM socket layer initialized
+[    5.036847] Bluetooth: RFCOMM ver 1.11
+[    5.043424] nvme nvme0: using unchecked data buffer
+[    5.062012] block nvme0n1: No UUID available providing old NGUID
+[    6.693106] macb 1f00100000.ethernet eth0: PHY [1f00100000.ethernet-ffffffff:01] driver [Broadcom BCM54213PE] (irq=POLL)
+[    6.693114] macb 1f00100000.ethernet eth0: configuring for phy/rgmii-id link mode
+[    6.695841] macb 1f00100000.ethernet: gem-ptp-timer ptp clock registered.
+[    6.723095] brcmfmac: brcmf_cfg80211_set_power_mgmt: power save enabled
+[    9.092781] FAT-fs (mmcblk0p1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+[  883.596926] OF: overlay: WARNING: memory leak will occur if overlay removed, property: /axi/pcie@1000120000/rp1/i2c@74000/status
+[  896.713616] OF: overlay: WARNING: memory leak will occur if overlay removed, property: /axi/pcie@1000120000/rp1/spi@50000/status
+[ 2345.017540] rp1-cfe 1f00128000.csi: csi2_ch0 node link is not enabled.
+[ 2680.044382] Bluetooth: hci0: Bad flag given (0x1) vs supported (0x0)
+[ 2682.195088] input: Bluetooth Keyboard as /devices/virtual/misc/uhid/0005:32C2:0013.0004/input/input9
+[ 2682.318699] hid-generic 0005:32C2:0013.0004: input,hidraw3: BLUETOOTH HID v1.00 Keyboard [Bluetooth Keyboard] on 88:a2:9e:10:37:48
+[ 3769.814874] ieee80211 phy0: brcmf_run_escan: error (-52)
+[ 3769.814885] ieee80211 phy0: brcmf_cfg80211_scan: scan error (-52)
+[ 3786.956775] rp1-cfe 1f00128000.csi: csi2_ch0 node link is not enabled.

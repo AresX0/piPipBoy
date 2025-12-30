@@ -1,0 +1,8 @@
+(last 200 lines of dmesg captured)
+
+[    1.383737]  mmcblk0: p1 p2
+[    1.383802] mmcblk0: mmc0:544c USD00 117 GiB (quirks 0x40000000)
+...
+[    9.052598] FAT-fs (mmcblk0p1): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+
+(see full kernel dmesg on Pi if more history needed)

@@ -1,0 +1,98 @@
+...............F....F........................                            [100%]
+=================================== FAILURES ===================================
+________________________ test_create_hardware_interface ________________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fff24a3d590>
+
+    def test_create_hardware_interface(monkeypatch):
+        # Verify create_hardware wires without real gpio or spi present
+        class DummyApp:
+            def handle_input(self, name):
+                # no-op for tests
+                pass
+    
+        dummy = DummyApp()
+        from pipboy.driver.freenove_case import create_hardware
+    
+>       hw = create_hardware(dummy)
+             ^^^^^^^^^^^^^^^^^^^^^^
+
+pipboy/tests/test_freenove_driver.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+pipboy/src/pipboy/driver/freenove_case.py:79: in create_hardware
+    inputs = case.create_inputs()
+             ^^^^^^^^^^^^^^^^^^^^
+pipboy/src/pipboy/driver/freenove_case.py:64: in create_inputs
+    return GPIOInput(mapping=self.cfg.input_mapping)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipboy/src/pipboy/interface/gpio_input.py:42: in __init__
+    self._setup()
+pipboy/src/pipboy/interface/gpio_input.py:50: in _setup
+    self.buttons = {name: Button(pin) for name, pin in self.mapping.items() if name in ("up", "down", "select", "back") and pin is not None}
+                          ^^^^^^^^^^^
+pipboy-venv/lib/python3.13/site-packages/gpiozero/devices.py:108: in __call__
+    self = super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipboy-venv/lib/python3.13/site-packages/gpiozero/input_devices.py:412: in __init__
+    super().__init__(
+pipboy-venv/lib/python3.13/site-packages/gpiozero/mixins.py:417: in __init__
+    super().__init__(*args, **kwargs)
+pipboy-venv/lib/python3.13/site-packages/gpiozero/input_devices.py:162: in __init__
+    super().__init__(
+pipboy-venv/lib/python3.13/site-packages/gpiozero/mixins.py:243: in __init__
+    super().__init__(*args, **kwargs)
+pipboy-venv/lib/python3.13/site-packages/gpiozero/input_devices.py:79: in __init__
+    super().__init__(pin, pin_factory=pin_factory)
+pipboy-venv/lib/python3.13/site-packages/gpiozero/devices.py:552: in __init__
+    self.pin_factory.reserve_pins(self, pin)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gpiozero.pins.lgpio.LGPIOFactory object at 0x7fff403b9400>
+requester = <gpiozero.Button object closed>, names = (5,)
+pins = <generator object Factory.reserve_pins.<locals>.<genexpr> at 0x7fff24a787c0>
+pin = PinInfo(number=29, name='GPIO5', names=frozenset({'GPIO5', 5, 'BCM5', 'WPI21', '5', 'BOARD29', 'J8:29'}), pull='', row=15, col=1, interfaces=frozenset({'', 'spi', 'i2c', 'uart', 'gpio', 'dpi'}))
+reserver_ref = <weakref at 0x7fff24a477e0; to 'gpiozero.input_devices.Button' at 0x7fff403b9160>
+
+    def reserve_pins(self, requester, *names):
+        """
+        Called to indicate that the device reserves the right to use the
+        specified pin *names*. This should be done during device construction.
+        If pins are reserved, you must ensure that the reservation is released
+        by eventually called :meth:`release_pins`.
+        """
+        with self._res_lock:
+            pins = (
+                info
+                for name in names
+                for header, info in self.board_info.find_pin(name)
+            )
+            for pin in pins:
+                for reserver_ref in self._reservations[pin]:
+                    reserver = reserver_ref()
+                    if reserver is not None and requester._conflicts_with(reserver):
+>                       raise GPIOPinInUse(
+                            f'pin {pin.name} is already in use by {reserver!r}')
+E                       gpiozero.exc.GPIOPinInUse: pin GPIO5 is already in use by <gpiozero.Button object on pin GPIO5, pull_up=True, is_active=False>
+
+pipboy-venv/lib/python3.13/site-packages/gpiozero/pins/__init__.py:88: GPIOPinInUse
+__________________________ test_led_backend_operates ___________________________
+
+    def test_led_backend_operates():
+        lb = backends.create_led_backend()
+>       assert lb is not None, "LED backend not available"
+E       AssertionError: LED backend not available
+E       assert None is not None
+
+pipboy/tests/test_hardware_integration.py:55: AssertionError
+=============================== warnings summary ===============================
+pipboy/tests/test_freenove_driver.py::test_create_display_and_inputs
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+pipboy/tests/test_freenove_driver.py::test_create_display_and_inputs
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED pipboy/tests/test_freenove_driver.py::test_create_hardware_interface
+FAILED pipboy/tests/test_hardware_integration.py::test_led_backend_operates
+2 failed, 43 passed, 2 warnings in 0.99s

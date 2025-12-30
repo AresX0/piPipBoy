@@ -1,0 +1,12 @@
+git status --porcelain output from Pi (~/pipboy):
+
+?? src/pipboy.egg-info/
+?? src/pipboy/__pycache__/__init__.cpython-313.pyc
+... (many .pyc untracked files listed)
+
+Current branch: main
+Remote origin: https://github.com/AresX0/piPipBoy.git
+
+Local commits not on origin/main: (none detected)
+
+Notes: No new commits to import from Pi; only untracked build artifacts and __pycache__ files present.

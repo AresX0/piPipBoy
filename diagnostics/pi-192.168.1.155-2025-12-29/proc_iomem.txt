@@ -1,0 +1,12 @@
+/proc/iomem snapshot captured on Pi
+
+00000000-00000000 : reserved
+00000000-00000000 : System RAM
+  00000000-00000000 : Kernel code
+(...)
+00000000-00000000 : 1000005100.iommu iommu@5100
+00000000-00000000 : 1000005200.iommu iommu@5200
+00000000-00000000 : 1000005280.iommu iommu@5280
+(...)
+
+Notes: IOMMU entries present; useful for pigpiod DMA mmap investigation.

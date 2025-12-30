@@ -1,0 +1,33 @@
+pgrep -a -f pipboy output:
+2541 /home/joseph/pipboy-venv/bin/python -u -m pipboy.main
+2911 bash -c pgrep -a -f pipboy || true
+
+--- PID 2541 fd list ---
+lrwx------ 1 joseph joseph 64 Dec 29 17:42 0 -> /dev/pts/2
+lrwx------ 1 joseph joseph 64 Dec 29 17:42 1 -> /dev/pts/2
+lrwx------ 1 joseph joseph 64 Dec 29 17:42 2 -> /dev/pts/2
+lrwx------ 1 joseph joseph 64 Dec 29 17:42 3 -> /dev/i2c-1
+lrwx------ 1 joseph joseph 64 Dec 29 17:42 4 -> /home/joseph/.lgd-nfy0
+lr-x------ 1 joseph joseph 64 Dec 29 17:42 5 -> /home/joseph/.lgd-nfy0
+lrwx------ 1 joseph joseph 64 Dec 29 17:42 6 -> /dev/gpiochip0
+lr-x------ 1 joseph joseph 64 Dec 29 17:42 7 -> anon_inode:gpio-line
+lr-x------ 1 joseph joseph 64 Dec 29 17:42 8 -> anon_inode:gpio-line
+lr-x------ 1 joseph joseph 64 Dec 29 17:42 9 -> anon_inode:gpio-line
+
+--- PID 2541 environ (strings) ---
+DISPLAY=:0
+XAUTHORITY=/home/joseph/.Xauthority
+
+--- PID 2541 lsof (gpio/X) ---
+python  2541 joseph mem  REG  259,2   133144 139525 /usr/lib/aarch64-linux-gnu/liblgpio.so.1
+python  2541 joseph mem  REG  259,2   257576 529791 /home/joseph/pipboy-venv/lib/python3.13/site-packages/_lgpio.cpython-313-aarch64-linux-gnu.so
+python  2541 joseph   6u  CHR  254,0      0t0    137 /dev/gpiochip0
+python  2541 joseph   7r  a_inode   0,15        0   1057 gpio-line
+python  2541 joseph   8r  a_inode   0,15        0   1057 gpio-line
+python  2541 joseph   9r  a_inode   0,15        0   1057 gpio-line
+
+--- PID 2541 maps (tail) ---
+(see file: strace.2456.txt for maps excerpt)
+
+Notes:
+- PID 2541 is the running foreground instance; it holds /dev/gpiochip0 and several gpio-line anon_inode handles.
