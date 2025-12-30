@@ -105,21 +105,25 @@ def attach_icon_support(ui: Any) -> None:
                     return
 
                 n = len(names)
-                # Icon size: use explicit ui.icon_size if set; otherwise auto-scale to screen width
+                # Icon size: autoscale by default; allow forced user override with ui.icon_size_force=True
                 user_size = getattr(ui, 'icon_size', None)
-                if user_size:
+                force_user = bool(getattr(ui, 'icon_size_force', False))
+                if user_size and force_user:
                     try:
                         size = int(user_size)
+                        mode = 'forced'
                     except Exception:
                         size = 24
+                        mode = 'auto'
                 else:
                     # heuristic: ~width/80 gives ~24px on 1920px wide screens; clamp to [12,48]
                     try:
                         size = max(12, min(48, max(1, int(width)) // 80))
                     except Exception:
                         size = 24
+                    mode = 'auto'
                 try:
-                    print(f"Icon render size={size} (user_size={user_size}) width={width} height={height}")
+                    print(f"Icon render size={size} mode={mode} (user_size={user_size} force_user={force_user}) width={width} height={height}")
                 except Exception:
                     pass
                 padding = max(8, size // 3)
