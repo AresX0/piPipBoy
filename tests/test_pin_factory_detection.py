@@ -39,7 +39,8 @@ def test_pigpio_connected(monkeypatch):
     orig_import = builtins.__import__
 
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
-        if name == 'lgpio':
+        # Block lgpio and any submodules (e.g., lgpio._lgpio) to force pigpio path
+        if name == 'lgpio' or name.startswith('lgpio.'):
             raise ImportError()
         return orig_import(name, globals, locals, fromlist, level)
 
@@ -70,7 +71,8 @@ def test_pigpio_not_connected(monkeypatch):
     orig_import = builtins.__import__
 
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
-        if name == 'lgpio':
+        # Block lgpio and any submodules (e.g., lgpio._lgpio) to force pigpio path
+        if name == 'lgpio' or name.startswith('lgpio.'):
             raise ImportError()
         return orig_import(name, globals, locals, fromlist, level)
 
@@ -101,7 +103,8 @@ def test_pigpio_init_failure_logs(monkeypatch, capsys):
     orig_import = builtins.__import__
 
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
-        if name == 'lgpio':
+        # Block lgpio and any submodules (e.g., lgpio._lgpio) to force pigpio path
+        if name == 'lgpio' or name.startswith('lgpio.'):
             raise ImportError()
         return orig_import(name, globals, locals, fromlist, level)
 
