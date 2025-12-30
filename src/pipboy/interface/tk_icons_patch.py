@@ -50,21 +50,28 @@ def attach_icon_support(ui: Any) -> None:
         ui.icon_size = getattr(ui, 'icon_size', 24)  # default icon size (px) on Pi/desktop
 
         def _get_tk_image(path: str, size: int):
-            # Return a tkinter-compatible PhotoImage sized to (size, size)
+            # Return a tkinter-compatible PhotoImage sized to (size, size). Prefer pre-resized
+            # assets in resources/icons/<size>/ if they exist to avoid runtime scaling overhead.
             try:
                 from PIL import Image, ImageTk
             except Exception:
                 Image = None
                 ImageTk = None
             try:
+                p = Path(path)
+                pre = p.parent / str(size) / p.name
+                if pre.exists():
+                    use_path = str(pre)
+                else:
+                    use_path = path
                 if Image is not None:
-                    img = Image.open(path).convert('RGBA')
+                    img = Image.open(use_path).convert('RGBA')
                     img = img.resize((size, size), Image.LANCZOS)
                     tkimg = ImageTk.PhotoImage(img)
                 else:
                     # fallback: use tkinter.PhotoImage and rely on subsample (approximate)
                     import tkinter as tk
-                    tkimg = tk.PhotoImage(file=path)
+                    tkimg = tk.PhotoImage(file=use_path)
                     # try integer subsample to make it reasonably small
                     try:
                         w = tkimg.width()
