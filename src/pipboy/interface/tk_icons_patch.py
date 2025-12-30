@@ -17,7 +17,9 @@ def attach_icon_support(ui: Any) -> None:
     ui._icon_support_attached = True
 
     # Where to search for icons relative to the package
-    repo_icons = Path(__file__).parent.parent.parent / "resources" / "icons"
+    # repo_icons should point to the repository root 'resources/icons'
+    repo_icons = Path(__file__).parent.parent.parent.parent / "resources" / "icons"
+    # src_icons is the package-local resources/icons
     src_icons = Path(__file__).parent.parent / "resources" / "icons"
 
     def _load_icons():
