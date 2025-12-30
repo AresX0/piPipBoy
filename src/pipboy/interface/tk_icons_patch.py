@@ -114,7 +114,20 @@ def attach_icon_support(ui: Any) -> None:
                 # Icon size: autoscale by default; allow forced user override with ui.icon_size_force=True
                 user_size = getattr(ui, 'icon_size', None)
                 force_user = bool(getattr(ui, 'icon_size_force', False))
-                if user_size and force_user:
+                # allow env var override for quick testing on Pi: PIPBOY_ICON_SIZE
+                try:
+                    import os
+                    env_size = os.environ.get('PIPBOY_ICON_SIZE')
+                except Exception:
+                    env_size = None
+                if env_size:
+                    try:
+                        size = int(env_size)
+                        mode = 'env'
+                    except Exception:
+                        size = 24
+                        mode = 'auto'
+                elif user_size and force_user:
                     try:
                         size = int(user_size)
                         mode = 'forced'
@@ -131,7 +144,7 @@ def attach_icon_support(ui: Any) -> None:
                         size = 24
                     mode = 'auto'
                 try:
-                    print(f"Icon render size chosen={size} mode={mode} (user_size={user_size} force_user={force_user}) width={width} height={height}")
+                    print(f"Icon render size chosen={size} mode={mode} (env_size={env_size} user_size={user_size} force_user={force_user}) width={width} height={height}")
                 except Exception:
                     pass
                 padding = max(8, size // 3)
