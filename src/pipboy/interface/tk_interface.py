@@ -46,10 +46,16 @@ class TkInterface:
         # Increase canvas to 800x600 (user requested)
         self.canvas = tk.Canvas(self.root, width=800, height=600, bg="#001100")
         self.canvas.pack()
+        self.root.update()
         self.load_config()
         # Place tabs/icons at the bottom by default, allow config override
         ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
         self.tab_at_bottom = ui_conf.get("tab_at_bottom", True)
+        # Print startup diagnostics to the GUI log so the launcher can confirm config
+        try:
+            print(f"STARTUP: canvas={self.canvas['width']}x{self.canvas['height']} tab_at_bottom={self.tab_at_bottom}")
+        except Exception:
+            pass
 
         # Determine fullscreen preference: explicit arg > config file
         ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
