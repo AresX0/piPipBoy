@@ -75,7 +75,24 @@ class AppManager:
             # Allow TkInterface to override tab fg (pulse effect)
             if hasattr(ctx, "_tab_fg_override") and ctx._tab_fg_override is not None and i == self.index:
                 fg = ctx._tab_fg_override
-            ctx.draw_text(x, y, label, fg=fg)
+
+            # Render optional icon if available on the rendering context
+            icon_drawn = False
+            try:
+                key = label.lower()
+                if hasattr(ctx, "icons") and key in ctx.icons and hasattr(ctx, "canvas"):
+                    try:
+                        ctx.canvas.create_image(x, y, image=ctx.icons[key], anchor="nw")
+                        icon_drawn = True
+                    except Exception:
+                        # ignore icon drawing errors
+                        icon_drawn = False
+            except Exception:
+                icon_drawn = False
+
+            # Adjust text offset if icon drawn
+            text_x = x + (24 if icon_drawn else 0)
+            ctx.draw_text(text_x, y, label, fg=fg)
             x += 60
         # Delegate to active app
         if hasattr(self.current, "render"):
