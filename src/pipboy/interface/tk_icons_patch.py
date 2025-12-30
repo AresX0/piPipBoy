@@ -189,19 +189,13 @@ def attach_icon_support(ui: Any) -> None:
                                 pass
                             item = canvas.create_image(x, y, image=img, anchor='s')
                             ui._icon_items.append(item)
-                        except Exception:
-                            pass
-
-                # Small summary for logs to aid debugging layout issues
-                try:
-                    print(f"Icon layout rows={rows} counts={counts} width={width} height={height}")
-                except Exception:
-                    pass
-
-            except Exception:
-                pass
-
-        ui._render_icon_bar = _render_icon_bar
+                                try:
+                                    # ensure icons are on top and log their actual bounding box
+                                    canvas.tag_raise(item)
+                                    bbox = canvas.bbox(item)
+                                    print(f"Icon bbox for '{name}': {bbox}")
+                                except Exception:
+                                    pass
 
         # Schedule re-render attempts until icons are actually placed on canvas
         try:
