@@ -31,7 +31,9 @@ def mock_gpio_pin_factory():
     """
     old_factory = None
     try:
-        if not os.environ.get('RUN_PI_HARDWARE_TESTS'):
+        val = os.environ.get('RUN_PI_HARDWARE_TESTS')
+        # Treat unset, empty, '0', or 'false' as disabled; anything else enables
+        if not val or val in ("0", "false", "False"):
             try:
                 from gpiozero import Device
                 from gpiozero.pins.mock import MockFactory
