@@ -176,6 +176,16 @@ def attach_icon_support(ui: Any) -> None:
                                 continue
                             ui._tk_images[key] = img
                         try:
+                            # log image size if possible for debugging layout
+                            try:
+                                iw = img.width() if hasattr(img, 'width') else None
+                                ih = img.height() if hasattr(img, 'height') else None
+                            except Exception:
+                                iw = ih = None
+                            try:
+                                print(f"Placing icon '{name}' at ({x},{y}) img_size={iw}x{ih} target={size}")
+                            except Exception:
+                                pass
                             item = canvas.create_image(x, y, image=img, anchor='s')
                             ui._icon_items.append(item)
                         except Exception:
