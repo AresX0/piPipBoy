@@ -43,9 +43,19 @@ class TkInterface:
         # Create root early so tests can monkeypatch attributes
         self.root = tk.Tk()
         self.root.title("piPipBoy - DEV MODE")
-        self.canvas = tk.Canvas(self.root, width=480, height=320, bg="#001100")
+        # Increase canvas to 800x600 (user requested)
+        self.canvas = tk.Canvas(self.root, width=800, height=600, bg="#001100")
         self.canvas.pack()
+        self.root.update()
         self.load_config()
+        # Place tabs/icons at the bottom by default, allow config override
+        ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
+        self.tab_at_bottom = ui_conf.get("tab_at_bottom", True)
+        # Print startup diagnostics to the GUI log so the launcher can confirm config
+        try:
+            print(f"STARTUP: canvas={self.canvas['width']}x{self.canvas['height']} tab_at_bottom={self.tab_at_bottom}")
+        except Exception:
+            pass
 
         # Determine fullscreen preference: explicit arg > config file
         ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
@@ -60,9 +70,10 @@ class TkInterface:
                 except Exception:
                     pass
 
-        # Load available icons (best-effort)
+        # Load available icons (best-effort) from either src/resources/icons or repo-root resources/icons
         self.icons: dict[str, Any] = {}
         self._load_icons()
+
 
         # Touch / click support
         ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
@@ -89,11 +100,14 @@ class TkInterface:
         from pipboy.app.radio import RadioApp
         from pipboy.app.update import UpdateApp
         from pipboy.app.debug import DebugApp
+        from pipboy.app.settings import SettingsApp
+        from pipboy.app.exit_app import ExitApp
         from .app_manager import AppManager
 
         theme = self.config.get("themes", {}).get(self.config.get("theme", "green"), {})
         fb_color = theme.get("feedback_fg", "#ffff66")
         fb_duration = theme.get("feedback_duration", 0.5)
+
         self.app_manager = AppManager([
             FileManagerApp(),
             MapApp(),
@@ -102,6 +116,8 @@ class TkInterface:
             RadioApp(),
             UpdateApp(),
             DebugApp(),
+            SettingsApp(),
+            ExitApp(),
         ], feedback_color=fb_color, feedback_duration=fb_duration)
 
     def load_config(self) -> None:
@@ -112,16 +128,24 @@ class TkInterface:
             self.config = {"theme": "green"}
 
     def _load_icons(self) -> None:
-        """Load app icons from resources/icons (best-effort)."""
+        """Load app icons from resources/icons (best-effort).
+
+        Search both src/resources/icons and repo-root resources/icons so user-supplied
+        icons placed at project root are discovered.
+        """
         try:
-            base = Path(__file__).parent.parent.parent / "resources" / "icons"
-            if base.exists() and base.is_dir():
-                for p in base.glob("*.png"):
-                    try:
-                        self.icons[p.stem] = tk.PhotoImage(file=str(p))
-                    except Exception:
-                        # ignore images that fail to load
-                        pass
+            candidates = [
+                Path(__file__).parent.parent.parent / "resources" / "icons",
+                Path(__file__).parent.parent.parent.parent / "resources" / "icons",
+            ]
+            for base in candidates:
+                if base.exists() and base.is_dir():
+                    for p in base.glob("*.png"):
+                        try:
+                            self.icons[p.stem] = tk.PhotoImage(file=str(p))
+                        except Exception:
+                            # ignore images that fail to load
+                            pass
         except Exception:
             # Don't fail UI for missing icons
             pass
@@ -139,10 +163,17 @@ class TkInterface:
 
         self.canvas.config(bg=bg)
         self.canvas.delete("all")
-        self.draw_text(10, 10, "piPipBoy - DEV MODE", fg=fg)
-        # Draw a simple tab bar background to make click area obvious
+        # Title (green) per user's request
+        self.draw_text(10, 10, "PiPIPBOY", fg="#99ff66")
+
+        # Draw a tab bar background (top or bottom depending on config)
         try:
-            self.canvas.create_rectangle(0, 0, 480, 36, fill=bg, outline=bg)
+            w = self.canvas.winfo_width() or 800
+            h = self.canvas.winfo_height() or 600
+            if getattr(self, "tab_at_bottom", False):
+                self.canvas.create_rectangle(0, h - 36, w, h, fill=bg, outline=bg)
+            else:
+                self.canvas.create_rectangle(0, 0, w, 36, fill=bg, outline=bg)
         except Exception:
             pass
 
@@ -175,10 +206,23 @@ class TkInterface:
 
     # Touch / click handlers
     def _tab_index_at(self, x: int, y: int) -> int | None:
-        """Return tab index at given x,y or None if outside tab area."""
-        # Tab bar is at y ~ 10..36 and each slot is 60px wide starting at x=10
-        if not (0 <= y <= 36):
-            return None
+        """Return tab index at given x,y or None if outside tab area.
+
+        Supports tabs at the top (y in 0..36) or bottom (y in canvas_height-36..canvas_height).
+        """
+        try:
+            if getattr(self, "tab_at_bottom", False):
+                h = self.canvas.winfo_height() or 480
+                if not (h - 36 <= y <= h):
+                    return None
+            else:
+                if not (0 <= y <= 36):
+                    return None
+        except Exception:
+            # If we can't query canvas size, fall back to top behavior
+            if not (0 <= y <= 36):
+                return None
+
         idx = (x - 10) // 60
         if idx < 0:
             return None

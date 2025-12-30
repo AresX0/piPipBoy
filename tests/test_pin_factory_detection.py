@@ -1,0 +1,163 @@
+import importlib
+import sys
+import types
+import os
+
+import importlib
+from pathlib import Path
+
+# Load the local source file directly to ensure tests exercise the working tree
+root = Path(__file__).resolve().parents[1]
+main_path = root / 'src' / 'pipboy' / 'main.py'
+_spec = importlib.util.spec_from_file_location('pipboy.main_local', main_path)
+main = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(main)
+
+
+def _clear_env():
+    os.environ.pop('GPIOZERO_PIN_FACTORY', None)
+
+
+def lgpio_present():
+    """Return True if lgpio appears available on this runner.
+
+    importlib.util.find_spec('lgpio') can raise ValueError when the already-
+    imported module has a __spec__ of None (observed on some Pi setups), so
+    catch that and fall back to checking sys.modules.
+    """
+    import importlib, sys
+    try:
+        return importlib.util.find_spec('lgpio') is not None
+    except ValueError:
+        return 'lgpio' in sys.modules
+
+
+def test_prefers_lgpio(monkeypatch):
+    # Simulate lgpio present
+    for m in list(sys.modules.keys()):
+        if m == 'lgpio' or m.startswith('lgpio.'):
+            sys.modules.pop(m, None)
+    sys.modules.pop('pigpio', None)
+    sys.modules['lgpio'] = types.ModuleType('lgpio')
+    _clear_env()
+    # force the selection to run inside pytest
+    main.choose_gpio_pin_factory(force=True)
+    assert os.environ.get('GPIOZERO_PIN_FACTORY') == 'lgpio'
+
+
+def test_pigpio_connected(monkeypatch):
+    # If lgpio is present on the runner, tests that assert pigpio selection
+    # are unreliable; skip under that condition.
+    if lgpio_present():
+        import pytest
+        pytest.skip("lgpio present on runner; skipping pigpio-specific test")
+
+    # Ensure lgpio absent and pigpio present with connected=True
+    for m in list(sys.modules.keys()):
+        if m == 'lgpio' or m.startswith('lgpio.'):
+            sys.modules.pop(m, None)
+
+    # Ensure import of lgpio fails so we exercise pigpio code even if lgpio is
+    # installed on the test runner (e.g., on the Pi).
+    import builtins
+    orig_import = builtins.__import__
+
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        # Block lgpio and any submodules (e.g., lgpio._lgpio) to force pigpio path
+        if name == 'lgpio' or name.startswith('lgpio.'):
+            raise ImportError()
+        return orig_import(name, globals, locals, fromlist, level)
+
+    builtins.__import__ = fake_import
+
+    class MockPi:
+        connected = True
+
+    mod = types.ModuleType('pigpio')
+    mod.pi = lambda: MockPi()
+    sys.modules['pigpio'] = mod
+
+    _clear_env()
+    try:
+        main.choose_gpio_pin_factory(force=True, prefer='pigpio')
+    finally:
+        builtins.__import__ = orig_import
+
+    assert os.environ.get('GPIOZERO_PIN_FACTORY') == 'pigpio'
+
+
+def test_pigpio_not_connected(monkeypatch):
+    if lgpio_present():
+        import pytest
+        pytest.skip("lgpio present on runner; skipping pigpio-specific test")
+
+    for m in list(sys.modules.keys()):
+        if m == 'lgpio' or m.startswith('lgpio.'):
+            sys.modules.pop(m, None)
+
+    # Ensure import of lgpio fails so we exercise pigpio code even if lgpio is
+    # installed on the test runner (e.g., on the Pi).
+    import builtins
+    orig_import = builtins.__import__
+
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        # Block lgpio and any submodules (e.g., lgpio._lgpio) to force pigpio path
+        if name == 'lgpio' or name.startswith('lgpio.'):
+            raise ImportError()
+        return orig_import(name, globals, locals, fromlist, level)
+
+    builtins.__import__ = fake_import
+
+    class MockPi:
+        connected = False
+
+    mod = types.ModuleType('pigpio')
+    mod.pi = lambda: MockPi()
+    sys.modules['pigpio'] = mod
+
+    _clear_env()
+    try:
+        main.choose_gpio_pin_factory(force=True, prefer='pigpio')
+    finally:
+        builtins.__import__ = orig_import
+
+    assert os.environ.get('GPIOZERO_PIN_FACTORY') is None
+
+
+def test_pigpio_init_failure_logs(monkeypatch, capsys):
+    if lgpio_present():
+        import pytest
+        pytest.skip("lgpio present on runner; skipping pigpio-specific test")
+
+    for m in list(sys.modules.keys()):
+        if m == 'lgpio' or m.startswith('lgpio.'):
+            sys.modules.pop(m, None)
+
+    # Ensure import of lgpio fails so we exercise pigpio code even if lgpio is
+    # installed on the test runner (e.g., on the Pi).
+    import builtins
+    orig_import = builtins.__import__
+
+    def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+        # Block lgpio and any submodules (e.g., lgpio._lgpio) to force pigpio path
+        if name == 'lgpio' or name.startswith('lgpio.'):
+            raise ImportError()
+        return orig_import(name, globals, locals, fromlist, level)
+
+    builtins.__import__ = fake_import
+
+    def bad_pi():
+        raise RuntimeError("mmap dma failed")
+
+    mod = types.ModuleType('pigpio')
+    mod.pi = bad_pi
+    sys.modules['pigpio'] = mod
+
+    _clear_env()
+    try:
+        main.choose_gpio_pin_factory(force=True, prefer='pigpio')
+    finally:
+        builtins.__import__ = orig_import
+
+    captured = capsys.readouterr()
+    assert "failed to initialize" in captured.out or "mmap" in captured.out
