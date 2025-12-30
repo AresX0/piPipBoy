@@ -216,6 +216,30 @@ def attach_icon_support(ui: Any) -> None:
                                 print(f"Icon render succeeded after {attempts[0]} attempts")
                             except Exception:
                                 pass
+                            # Try to capture the canvas contents to a local PNG for reliable debugging
+                            try:
+                                from pathlib import Path
+                                diag = Path.home() / 'diagnostics'
+                                diag.mkdir(parents=True, exist_ok=True)
+                                ps_path = str(diag / 'pipboy_canvas.ps')
+                                png_path = str(diag / 'pipboy_canvas_internal.png')
+                                try:
+                                    canvas.postscript(file=ps_path, colormode='color')
+                                    # Try to convert via PIL (requires Ghostscript or ImageMagick fallback)
+                                    try:
+                                        from PIL import Image
+                                        img = Image.open(ps_path)
+                                        img.save(png_path)
+                                    except Exception:
+                                        import subprocess
+                                        try:
+                                            subprocess.run(['convert', ps_path, png_path], check=True)
+                                        except Exception:
+                                            pass
+                                except Exception:
+                                    pass
+                            except Exception:
+                                pass
                             return
                         if attempts[0] < 20:
                             try:
