@@ -1,0 +1,16 @@
+crw-rw----+  1 root   gpio    254,   0 Dec 29 18:20 gpiochip0
+crw-rw----+  1 root   gpio    254,  10 Dec 29 18:20 gpiochip10
+crw-rw----+  1 root   gpio    254,  11 Dec 29 18:20 gpiochip11
+crw-rw----+  1 root   gpio    254,  12 Dec 29 18:20 gpiochip12
+crw-rw----+  1 root   gpio    254,  13 Dec 29 18:20 gpiochip13
+crw-rw----+  1 root   gpio    254,  14 Dec 29 18:20 gpiochip14
+lrwxrwxrwx   1 root   root           9 Dec 29 18:20 gpiochip4 -> gpiochip0
+crw-rw----   1 root   gpio    510,   0 Dec 29 18:20 gpiomem0
+crw-rw----   1 root   gpio    237,   0 Dec 29 18:20 gpiomem1
+crw-rw----   1 root   gpio    235,   0 Dec 29 18:20 gpiomem2
+crw-rw----   1 root   gpio    234,   0 Dec 29 18:20 gpiomem3
+crw-rw----   1 root   gpio    511,   0 Dec 29 18:20 gpiomem4
+crw-rw----   1 root   gpio    240,   0 Dec 29 18:20 pio0
+crw-------   1 root   root     10, 124 Dec 29 18:20 cpu_dma_latency
+drwxr-xr-x   2 root   root         100 Dec 29 18:20 dma_heap
+crw-rw----+  1 root   kvm      10, 125 Dec 29 18:20 udmabuf
