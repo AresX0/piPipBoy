@@ -105,15 +105,26 @@ def attach_icon_support(ui: Any) -> None:
                     return
 
                 n = len(names)
-                # Icon size (allow override via ui.icon_size)
-                size = getattr(ui, 'icon_size', 24)
+                # Icon size: use explicit ui.icon_size if set; otherwise auto-scale to screen width
+                user_size = getattr(ui, 'icon_size', None)
+                if user_size:
+                    try:
+                        size = int(user_size)
+                    except Exception:
+                        size = 24
+                else:
+                    # heuristic: ~width/80 gives ~24px on 1920px wide screens; clamp to [12,48]
+                    try:
+                        size = max(12, min(48, max(1, int(width)) // 80))
+                    except Exception:
+                        size = 24
                 try:
-                    print(f"Icon render size={size} ui.icon_size={getattr(ui,'icon_size',None)} width={width} height={height}")
+                    print(f"Icon render size={size} (user_size={user_size}) width={width} height={height}")
                 except Exception:
                     pass
-                padding = 8
-                bottom_padding = 10
-                row_spacing = size + 8
+                padding = max(8, size // 3)
+                bottom_padding = size // 2 + 6
+                row_spacing = size + max(8, size // 3)
 
                 # Prefer 2 rows unless too many icons; allow up to 3 rows
                 rows = 2 if n <= 8 else 3
