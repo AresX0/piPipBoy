@@ -136,6 +136,15 @@ def main(argv: list[str] | None = None):
     if dev_mode:
         print(f"piPipBoy {__version__} — starting in DEV (Tk) mode")
         from .interface.tk_interface import TkInterface
+        from .interface.icon_utils import find_or_create_icon
+        from pathlib import Path
+
+        # Ensure developer-friendly icons exist (case-insensitive names will be
+        # matched or a placeholder generated) so desktop launches show icons.
+        repo_icons = Path(__file__).parent.parent / "resources" / "icons"
+        src_icons = Path(__file__).parent / "resources" / "icons"
+        for name in ("Camera", "FileManager", "Lights", "Fan", "Display"):
+            find_or_create_icon(name, [src_icons, repo_icons])
 
         ui = TkInterface(CONFIG_PATH, sensors=sensors)
         ui.run()
@@ -157,6 +166,11 @@ def main(argv: list[str] | None = None):
             from .app.radio import RadioApp
             from .app.update import UpdateApp
             from .app.debug import DebugApp
+            # Extended device apps
+            from .app.fan import FanApp
+            from .app.camera import CameraApp
+            from .app.lights import LightsApp
+            from .app.display import DisplayApp
 
             # Support hardware profiles (e.g., freenove) for pre-wired setups
             profile = args.profile
@@ -165,6 +179,10 @@ def main(argv: list[str] | None = None):
 
                 app_manager = AppManager([
                     FileManagerApp(),
+                    FanApp(),
+                    CameraApp(),
+                    LightsApp(),
+                    DisplayApp(),
                     MapApp(sensors=sensors),
                     EnvironmentApp(sensors=sensors),
                     ClockApp(sensors=sensors),
@@ -180,6 +198,10 @@ def main(argv: list[str] | None = None):
                 inputs = GPIOInput()
                 apps = [
                     FileManagerApp(),
+                    FanApp(),
+                    CameraApp(),
+                    LightsApp(),
+                    DisplayApp(),
                     MapApp(sensors=sensors),
                     EnvironmentApp(sensors=sensors),
                     ClockApp(sensors=sensors),
