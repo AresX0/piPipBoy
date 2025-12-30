@@ -3,7 +3,15 @@ import sys
 import types
 import os
 
-from pipboy import main
+import importlib
+from pathlib import Path
+
+# Load the local source file directly to ensure tests exercise the working tree
+root = Path(__file__).resolve().parents[1]
+main_path = root / 'src' / 'pipboy' / 'main.py'
+_spec = importlib.util.spec_from_file_location('pipboy.main_local', main_path)
+main = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(main)
 
 
 def _clear_env():
