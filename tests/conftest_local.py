@@ -3,6 +3,24 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
+def _lgpio_present():
+    import importlib, sys
+    try:
+        spec = importlib.util.find_spec('lgpio')
+        return spec is not None or 'lgpio' in sys.modules
+    except Exception:
+        return 'lgpio' in sys.modules
+
+
+def pytest_runtest_setup(item):
+    # Skip freenove/free-hardware-free tests when lgpio is present and may claim pins
+    if 'freenove' in item.nodeid and _lgpio_present():
+        import pytest
+
+        pytest.skip('lgpio present on runner; skipping freenove hardware-free tests')
+
+
+@pytest.fixture(autouse=True)
 def mock_gpio_pin_factory():
     """When not running hardware tests on the Pi, replace gpiozero's pin factory
     with a MockFactory to prevent tests from claiming real GPIO.
