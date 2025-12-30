@@ -105,6 +105,12 @@ def attach_icon_support(ui: Any) -> None:
                     return
 
                 n = len(names)
+                # debug: log canvas and icon counts
+                try:
+                    print(f"render_icon_bar: canvas={width}x{height} n={n}")
+                except Exception:
+                    pass
+
                 # Icon size: autoscale by default; allow forced user override with ui.icon_size_force=True
                 user_size = getattr(ui, 'icon_size', None)
                 force_user = bool(getattr(ui, 'icon_size_force', False))
@@ -116,14 +122,16 @@ def attach_icon_support(ui: Any) -> None:
                         size = 24
                         mode = 'auto'
                 else:
-                    # heuristic: ~width/80 gives ~24px on 1920px wide screens; clamp to [12,48]
+                    # heuristic: ~width/80 gives ~24px on 1920px wide screens
+                    # use a larger minimum so icons are readable on small canvases
                     try:
-                        size = max(12, min(48, max(1, int(width)) // 80))
+                        min_size = 18
+                        size = max(min_size, min(48, max(1, int(width)) // 80))
                     except Exception:
                         size = 24
                     mode = 'auto'
                 try:
-                    print(f"Icon render size={size} mode={mode} (user_size={user_size} force_user={force_user}) width={width} height={height}")
+                    print(f"Icon render size chosen={size} mode={mode} (user_size={user_size} force_user={force_user}) width={width} height={height}")
                 except Exception:
                     pass
                 padding = max(8, size // 3)
