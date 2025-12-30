@@ -148,9 +148,24 @@ def attach_icon_support(ui: Any) -> None:
     # Attach the loader
     ui._load_icons = _load_icons
 
-    # Load icons immediately (defaults + app names if present)
+    # If the instance already set app_manager in its constructor, move it into
+    # our internal storage so the property behaves the same as before.
+    try:
+        if 'app_manager' in ui.__dict__:
+            try:
+                ui._app_manager_internal = ui.__dict__.pop('app_manager')
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    # Load icons immediately (defaults + app names if present) and render the bar
     try:
         ui._load_icons()
+        try:
+            ui._render_icon_bar()
+        except Exception:
+            pass
     except Exception:
         pass
 
