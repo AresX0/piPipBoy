@@ -75,12 +75,16 @@ class AppManager:
         # Determine y position based on context preference
         try:
             if hasattr(ctx, "tab_at_bottom") and ctx.tab_at_bottom and hasattr(ctx, "canvas"):
-                h = ctx.canvas.winfo_height() or 480
-                y = h - 30  # place icons slightly above the bottom edge
+                h = ctx.canvas.winfo_height() or 600
+                # use anchor="sw" so y is bottom baseline; leave a small margin
+                icon_y = h - 4
+                text_y = icon_y - 22
             else:
-                y = 10
+                icon_y = 10
+                text_y = 10
         except Exception:
-            y = 10
+            icon_y = 10
+            text_y = 10
 
         for i, app in enumerate(self.apps):
             label = getattr(app, "name", f"App{i}")[:8]
@@ -98,7 +102,10 @@ class AppManager:
                 full_key = getattr(app, "name", f"app{i}").lower()
                 if hasattr(ctx, "icons") and full_key in ctx.icons and hasattr(ctx, "canvas"):
                     try:
-                        ctx.canvas.create_image(x, y, image=ctx.icons[full_key], anchor="nw")
+                        if hasattr(ctx, "tab_at_bottom") and ctx.tab_at_bottom:
+                            ctx.canvas.create_image(x, icon_y, image=ctx.icons[full_key], anchor="sw")
+                        else:
+                            ctx.canvas.create_image(x, icon_y, image=ctx.icons[full_key], anchor="nw")
                         icon_drawn = True
                     except Exception:
                         # ignore icon drawing errors
@@ -106,9 +113,9 @@ class AppManager:
             except Exception:
                 icon_drawn = False
 
-            # Adjust text offset if icon drawn
+            # Adjust text offset and vertical position if icon drawn
             text_x = x + (24 if icon_drawn else 0)
-            ctx.draw_text(text_x, y, label, fg=fg)
+            ctx.draw_text(text_x, text_y, label, fg=fg)
             x += 60
         # Delegate to active app
         if hasattr(self.current, "render"):

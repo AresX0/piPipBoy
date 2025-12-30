@@ -43,12 +43,13 @@ class TkInterface:
         # Create root early so tests can monkeypatch attributes
         self.root = tk.Tk()
         self.root.title("piPipBoy - DEV MODE")
-        # Increase canvas by 50% (720x480 instead of 480x320)
-        self.canvas = tk.Canvas(self.root, width=720, height=480, bg="#001100")
+        # Increase canvas to 800x600 (user requested)
+        self.canvas = tk.Canvas(self.root, width=800, height=600, bg="#001100")
         self.canvas.pack()
         self.load_config()
-        # Place tabs/icons at the bottom by default (user preference)
-        self.tab_at_bottom = True
+        # Place tabs/icons at the bottom by default, allow config override
+        ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
+        self.tab_at_bottom = ui_conf.get("tab_at_bottom", True)
 
         # Determine fullscreen preference: explicit arg > config file
         ui_conf = self.config.get("ui", {}) if isinstance(self.config, dict) else {}
@@ -149,8 +150,8 @@ class TkInterface:
 
         # Draw a tab bar background (top or bottom depending on config)
         try:
-            w = self.canvas.winfo_width() or 720
-            h = self.canvas.winfo_height() or 480
+            w = self.canvas.winfo_width() or 800
+            h = self.canvas.winfo_height() or 600
             if getattr(self, "tab_at_bottom", False):
                 self.canvas.create_rectangle(0, h - 36, w, h, fill=bg, outline=bg)
             else:
