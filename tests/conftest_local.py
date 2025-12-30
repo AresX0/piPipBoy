@@ -13,7 +13,18 @@ def _lgpio_present():
 
 
 def pytest_runtest_setup(item):
-    # Skip freenove/free-hardware-free tests when lgpio is present and may claim pins
+    # Skip freenove/hardware-interacting tests unless explicitly enabled.
+    # This avoids accidentally claiming pins on CI or on developer machines where
+    # the environment isn't set up for hardware testing.
+    if 'freenove' in item.nodeid:
+        import pytest
+        val = os.environ.get('RUN_PI_HARDWARE_TESTS')
+        if not val or val in ("0", "false", "False"):
+            pytest.skip('RUN_PI_HARDWARE_TESTS is not set; skipping freenove hardware tests')
+
+    # Additionally, skip when lgpio is present since it may claim pins even when
+    # RUN_PI_HARDWARE_TESTS isn't set or when the runner is a Pi used for other
+    # development tasks.
     if 'freenove' in item.nodeid and _lgpio_present():
         import pytest
 
