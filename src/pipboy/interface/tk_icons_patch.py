@@ -107,6 +107,10 @@ def attach_icon_support(ui: Any) -> None:
                 n = len(names)
                 # Icon size (allow override via ui.icon_size)
                 size = getattr(ui, 'icon_size', 24)
+                try:
+                    print(f"Icon render size={size} ui.icon_size={getattr(ui,'icon_size',None)} width={width} height={height}")
+                except Exception:
+                    pass
                 padding = 8
                 bottom_padding = 10
                 row_spacing = size + 8
