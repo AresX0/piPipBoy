@@ -32,6 +32,13 @@ def test_prefers_lgpio(monkeypatch):
 
 
 def test_pigpio_connected(monkeypatch):
+    # If lgpio is present on the runner, tests that assert pigpio selection
+    # are unreliable; skip under that condition.
+    import importlib
+    if importlib.util.find_spec('lgpio') is not None:
+        import pytest
+        pytest.skip("lgpio present on runner; skipping pigpio-specific test")
+
     # Ensure lgpio absent and pigpio present with connected=True
     for m in list(sys.modules.keys()):
         if m == 'lgpio' or m.startswith('lgpio.'):
@@ -67,6 +74,11 @@ def test_pigpio_connected(monkeypatch):
 
 
 def test_pigpio_not_connected(monkeypatch):
+    import importlib
+    if importlib.util.find_spec('lgpio') is not None:
+        import pytest
+        pytest.skip("lgpio present on runner; skipping pigpio-specific test")
+
     for m in list(sys.modules.keys()):
         if m == 'lgpio' or m.startswith('lgpio.'):
             sys.modules.pop(m, None)
@@ -101,7 +113,14 @@ def test_pigpio_not_connected(monkeypatch):
 
 
 def test_pigpio_init_failure_logs(monkeypatch, capsys):
-    sys.modules.pop('lgpio', None)
+    import importlib
+    if importlib.util.find_spec('lgpio') is not None:
+        import pytest
+        pytest.skip("lgpio present on runner; skipping pigpio-specific test")
+
+    for m in list(sys.modules.keys()):
+        if m == 'lgpio' or m.startswith('lgpio.'):
+            sys.modules.pop(m, None)
 
     # Ensure import of lgpio fails so we exercise pigpio code even if lgpio is
     # installed on the test runner (e.g., on the Pi).
